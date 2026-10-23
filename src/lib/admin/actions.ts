@@ -3,6 +3,7 @@
 import { adminGet, adminSend } from "@/lib/admin/api"
 import type {
   AdminJob,
+  AdminUser,
   CacheEntry,
   CacheType,
   NeedType,
@@ -48,6 +49,22 @@ export async function approveCase(caseId: string) {
 
 export async function rejectCase(caseId: string, reason: string) {
   return adminSend("POST", `/admin/cases/${encodeURIComponent(caseId)}/reject`, { reason })
+}
+
+export async function grantModerator(userId: string) {
+  return adminSend<AdminUser>("PUT", `/admin/users/${encodeURIComponent(userId)}/roles/MODERATOR`)
+}
+
+export async function revokeModerator(userId: string) {
+  return adminSend<AdminUser>("DELETE", `/admin/users/${encodeURIComponent(userId)}/roles/MODERATOR`)
+}
+
+export async function blockUser(userId: string, reason: string) {
+  return adminSend<AdminUser>("POST", `/admin/users/${encodeURIComponent(userId)}/block`, { reason })
+}
+
+export async function unblockUser(userId: string) {
+  return adminSend<AdminUser>("POST", `/admin/users/${encodeURIComponent(userId)}/unblock`)
 }
 
 export async function runJob(job: AdminJob) {

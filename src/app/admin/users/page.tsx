@@ -5,9 +5,11 @@ import { Suspense } from "react"
 import { ApiErrorAlert } from "@/components/admin/api-error-alert"
 import { DataTable } from "@/components/admin/data-table"
 import { FilterForm } from "@/components/admin/filter-form"
+import { ModeratorRoleButton } from "@/components/admin/moderator-role-button"
 import { PageHeader } from "@/components/admin/page-header"
 import { TablePagination } from "@/components/admin/table-pagination"
 import { NoResults, TableSkeleton } from "@/components/admin/table-states"
+import { UserBlockButton } from "@/components/admin/user-block-button"
 import { UserStatusBadge } from "@/components/admin/status-badges"
 import { Badge } from "@/components/ui/badge"
 import { Field, FieldLabel } from "@/components/ui/field"
@@ -106,6 +108,7 @@ async function UsersContent({ searchParams }: { searchParams: Promise<SearchPara
                 <TableHead>Роли</TableHead>
                 <TableHead>Зарегистрирован</TableHead>
                 <TableHead>Последний вход</TableHead>
+                <TableHead />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -134,6 +137,19 @@ async function UsersContent({ searchParams }: { searchParams: Promise<SearchPara
                   </TableCell>
                   <TableCell>{formatDateTime(user.createdAt)}</TableCell>
                   <TableCell>{formatDateTime(user.lastLoginAt)}</TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-1">
+                      <ModeratorRoleButton user={user} />
+                      {user.roles.every((role) => role === "USER") &&
+                        (user.status === "ACTIVE" || user.status === "BLOCKED") && (
+                          <UserBlockButton
+                            userId={user.id}
+                            name={user.displayName ?? user.email}
+                            blocked={user.status === "BLOCKED"}
+                          />
+                        )}
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

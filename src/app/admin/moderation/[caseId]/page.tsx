@@ -7,6 +7,7 @@ import { ApiErrorAlert } from "@/components/admin/api-error-alert"
 import { ModerationActions } from "@/components/admin/moderation-actions"
 import { PageHeader } from "@/components/admin/page-header"
 import { CaseStatusBadge } from "@/components/admin/status-badges"
+import { UserBlockButton } from "@/components/admin/user-block-button"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -89,10 +90,16 @@ async function ModerationCase({ params }: { params: Promise<{ caseId: string }> 
           <CardContent>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
               <dt className="text-muted-foreground">Автор</dt>
-              <dd>
+              <dd className="flex flex-col items-start gap-1">
                 <Link href={`/admin/users/${item.author.id}`} className="underline-offset-4 hover:underline">
                   {item.author.displayName ?? item.author.id}
                 </Link>
+                <UserBlockButton
+                  userId={item.author.id}
+                  name={item.author.displayName ?? "Автор"}
+                  blocked={false}
+                  label="Заблокировать автора"
+                />
               </dd>
               <dt className="text-muted-foreground">Животное</dt>
               <dd>{ANIMAL_TYPE_LABELS[item.animalType] ?? item.animalType}</dd>
