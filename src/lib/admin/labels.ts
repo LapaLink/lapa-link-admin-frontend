@@ -22,8 +22,22 @@ export const ROLE_LABELS: Record<RoleCode, string> = {
 }
 
 export const CASE_STATUS_LABELS: Record<CaseStatus, string> = {
+  PENDING_REVIEW: "На рассмотрении",
   OPEN: "Открыто",
+  REJECTED: "Отклонено",
   CLOSED: "Закрыто",
+}
+
+export const ANIMAL_SEX_LABELS: Record<string, string> = {
+  MALE: "Мальчик",
+  FEMALE: "Девочка",
+  UNKNOWN: "Не известен",
+}
+
+export const NEED_PRIORITY_LABELS: Record<string, string> = {
+  LOW: "Низкий",
+  MEDIUM: "Средний",
+  HIGH: "Высокий",
 }
 
 export const ANIMAL_TYPE_LABELS: Record<string, string> = {
@@ -56,6 +70,8 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   USER_MFA_LOGIN: "Вход с MFA",
   CASE_CREATED: "Создание объявления",
   CASE_CLOSED: "Закрытие объявления",
+  CASE_APPROVED: "Одобрение объявления",
+  CASE_REJECTED: "Отклонение объявления",
   HELP_APPLICATION_CREATED: "Отклик",
   CONVERSATION_REQUESTED: "Запрос чата",
   CONVERSATION_ACCEPTED: "Чат принят",

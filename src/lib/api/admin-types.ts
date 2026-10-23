@@ -22,7 +22,7 @@ export type AdminUser = {
   createdAt: string
 }
 
-export type CaseStatus = "OPEN" | "CLOSED"
+export type CaseStatus = "PENDING_REVIEW" | "OPEN" | "REJECTED" | "CLOSED"
 
 export type AnimalType = "CAT" | "DOG"
 
@@ -36,6 +36,38 @@ export type UserCase = {
   createdAt: string
   openNeedsCount: number
   applicationsCount: number
+}
+
+export type ModerationCase = {
+  id: string
+  animalType: AnimalType
+  title: string
+  cityCode: string | null
+  photoUrl: string | null
+  createdAt: string
+}
+
+export type ModerationCaseDetails = ModerationCase & {
+  description: string | null
+  sex: "MALE" | "FEMALE" | "UNKNOWN"
+  approximateAge: string | null
+  condition: string | null
+  photos: { id: string; url: string; position: number }[]
+  status: CaseStatus
+  closeReason: string | null
+  closeComment: string | null
+  rejectionReason: string | null
+  author: { id: string; displayName: string | null; avatarUrl: string | null }
+  needs: {
+    id: string
+    type: string
+    status: NeedStatus
+    priority: NeedPriority
+    startsAt: string | null
+    deadline: string | null
+    comment: string | null
+  }[]
+  updatedAt: string
 }
 
 export type HelpApplicationStatus = "PENDING" | "ACCEPTED" | "CANCELLED"
@@ -75,6 +107,8 @@ export const AUDIT_ACTIONS = [
   "USER_MFA_LOGIN",
   "CASE_CREATED",
   "CASE_CLOSED",
+  "CASE_APPROVED",
+  "CASE_REJECTED",
   "HELP_APPLICATION_CREATED",
   "CONVERSATION_REQUESTED",
   "CONVERSATION_ACCEPTED",

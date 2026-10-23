@@ -17,6 +17,13 @@ const USER_STATUS_VARIANTS: Record<UserStatus, Variant> = {
   DELETED: "outline",
 }
 
+const CASE_STATUS_VARIANTS: Record<CaseStatus, Variant> = {
+  PENDING_REVIEW: "default",
+  OPEN: "secondary",
+  REJECTED: "destructive",
+  CLOSED: "outline",
+}
+
 const APPLICATION_STATUS_VARIANTS: Record<HelpApplicationStatus, Variant> = {
   PENDING: "outline",
   ACCEPTED: "secondary",
@@ -28,9 +35,7 @@ export function UserStatusBadge({ status }: { status: UserStatus }) {
 }
 
 export function CaseStatusBadge({ status }: { status: CaseStatus }) {
-  return (
-    <Badge variant={status === "OPEN" ? "secondary" : "outline"}>{CASE_STATUS_LABELS[status]}</Badge>
-  )
+  return <Badge variant={CASE_STATUS_VARIANTS[status]}>{CASE_STATUS_LABELS[status]}</Badge>
 }
 
 export function HelpApplicationStatusBadge({ status }: { status: HelpApplicationStatus }) {

@@ -13,6 +13,7 @@ import { NAVIGATION } from "@/lib/admin/navigation"
 import type {
   AdminUser,
   CacheKeys,
+  ModerationCase,
   NeedType,
   NotificationTemplate,
   Page,
@@ -44,7 +45,7 @@ export default function AdminPage() {
         </CardHeader>
       </Card>
       <Suspense
-        fallback={Array.from({ length: 4 }, (_, index) => (
+        fallback={Array.from({ length: 5 }, (_, index) => (
           <Skeleton key={index} className="h-32" />
         ))}
       >
@@ -101,7 +102,8 @@ async function Greeting() {
 }
 
 async function Stats() {
-  const [users, needTypes, cache, templates] = await Promise.all([
+  const [moderation, users, needTypes, cache, templates] = await Promise.all([
+    adminGet<Page<ModerationCase>>("/admin/cases/moderation", { size: "1" }),
     adminGet<Page<AdminUser>>("/admin/users", { size: "1" }),
     adminGet<NeedType[]>("/admin/need-types"),
     adminGet<CacheKeys>("/admin/cache"),
@@ -109,6 +111,11 @@ async function Stats() {
   ])
 
   const tiles = [
+    {
+      label: "На модерации",
+      value: moderation.ok ? moderation.data.totalElements : null,
+      href: "/admin/moderation",
+    },
     {
       label: "Пользователей",
       value: users.ok ? users.data.totalElements : null,

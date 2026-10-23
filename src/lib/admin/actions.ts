@@ -42,6 +42,14 @@ export async function getNotificationTemplate(
   )
 }
 
+export async function approveCase(caseId: string) {
+  return adminSend("POST", `/admin/cases/${encodeURIComponent(caseId)}/approve`)
+}
+
+export async function rejectCase(caseId: string, reason: string) {
+  return adminSend("POST", `/admin/cases/${encodeURIComponent(caseId)}/reject`, { reason })
+}
+
 export async function runJob(job: AdminJob) {
   return adminSend("POST", `/admin/jobs/${job}`)
 }

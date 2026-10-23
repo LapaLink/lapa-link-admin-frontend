@@ -27,19 +27,16 @@ const STAFF_ONLY: ApiError = {
 }
 
 export async function login(email: string, password: string): Promise<LoginState> {
-  const result = await backendFetch<LoginResponse>("/auth/login", {
+  const result = await backendFetch<LoginResponse>("/auth/admin/login", {
     method: "POST",
     body: { email, password },
   })
   if (!result.ok) {
-    return { status: "error", error: result.error }
+    return { status: "error", error: result.error.code === "ACCESS_DENIED" ? STAFF_ONLY : result.error }
   }
 
-  const { mfaRequired, mfaToken, mfaSetupRequired, mfaExpiresInSeconds, accessToken } = result.data
+  const { mfaRequired, mfaToken, mfaSetupRequired, mfaExpiresInSeconds } = result.data
   if (!mfaRequired || !mfaToken) {
-    if (accessToken) {
-      await backendFetch("/account/logout", { method: "POST", token: accessToken })
-    }
     return { status: "error", error: STAFF_ONLY }
   }
 
@@ -48,7 +45,7 @@ export async function login(email: string, password: string): Promise<LoginState
     return { status: "mfa", mfaToken, setup: null, expiresAt }
   }
 
-  const setup = await backendFetch<MfaSetupResponse>("/auth/login/mfa/setup", {
+  const setup = await backendFetch<MfaSetupResponse>("/auth/admin/login/mfa/setup", {
     method: "POST",
     body: { mfaToken },
   })
@@ -59,12 +56,12 @@ export async function login(email: string, password: string): Promise<LoginState
 }
 
 export async function verifyMfa(mfaToken: string, code: string): Promise<MfaVerifyState> {
-  const result = await backendFetch<LoginResponse>("/auth/login/mfa", {
+  const result = await backendFetch<LoginResponse>("/auth/admin/login/mfa", {
     method: "POST",
     body: { mfaToken, code },
   })
   if (!result.ok) {
-    return { status: "error", error: result.error }
+    return { status: "error", error: result.error.code === "ACCESS_DENIED" ? STAFF_ONLY : result.error }
   }
 
   const { accessToken, refreshToken, recoveryCodes } = result.data
