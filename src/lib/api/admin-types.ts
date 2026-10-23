@@ -70,6 +70,42 @@ export type ModerationCaseDetails = ModerationCase & {
   updatedAt: string
 }
 
+export type AdminCase = {
+  id: string
+  authorId: string
+  animalType: AnimalType
+  title: string
+  cityCode: string | null
+  photoUrl: string | null
+  status: CaseStatus
+  closeReason: string | null
+  closeComment: string | null
+  closedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type ComplaintStatus = "NEW" | "IN_PROGRESS" | "REJECTED" | "RESOLVED"
+
+export type ComplaintTargetType = "CASE" | "USER"
+
+export type ComplaintResolution = "WARNING_SENT" | "CASE_CLOSED" | "CASE_DELETED"
+
+export type AdminComplaint = {
+  id: string
+  reporterId: string
+  targetType: ComplaintTargetType
+  targetId: string
+  message: string
+  status: ComplaintStatus
+  resolution: ComplaintResolution | null
+  moderatorComment: string | null
+  moderatedBy: string | null
+  moderatedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 export type HelpApplicationStatus = "PENDING" | "ACCEPTED" | "CANCELLED"
 
 export type NeedStatus = "OPEN" | "ASSIGNED" | "CLOSED"
@@ -113,12 +149,18 @@ export const AUDIT_ACTIONS = [
   "CASE_CLOSED",
   "CASE_APPROVED",
   "CASE_REJECTED",
+  "CASE_CLOSED_BY_MODERATOR",
+  "CASE_DELETED",
   "HELP_APPLICATION_CREATED",
   "CONVERSATION_REQUESTED",
   "CONVERSATION_ACCEPTED",
   "CONVERSATION_DECLINED",
   "CONVERSATION_CLOSED",
   "CONVERSATION_REOPENED",
+  "COMPLAINT_TAKEN",
+  "COMPLAINT_REJECTED",
+  "COMPLAINT_WARNING_SENT",
+  "COMPLAINT_CASE_CLOSED",
 ] as const
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]
@@ -132,7 +174,7 @@ export type AuditLogEntry = {
   actorId: string | null
   actorRole: RoleCode | null
   action: AuditAction
-  targetType: "USER" | "CASE" | "HELP_APPLICATION" | "CONVERSATION" | null
+  targetType: "USER" | "CASE" | "HELP_APPLICATION" | "CONVERSATION" | "COMPLAINT" | null
   targetId: string | null
   outcome: AuditOutcome
   errorCode: string | null

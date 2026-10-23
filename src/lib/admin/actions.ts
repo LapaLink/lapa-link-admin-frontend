@@ -2,6 +2,8 @@
 
 import { adminGet, adminSend } from "@/lib/admin/api"
 import type {
+  AdminCase,
+  AdminComplaint,
   AdminJob,
   AdminUser,
   CacheEntry,
@@ -49,6 +51,36 @@ export async function approveCase(caseId: string) {
 
 export async function rejectCase(caseId: string, reason: string) {
   return adminSend("POST", `/admin/cases/${encodeURIComponent(caseId)}/reject`, { reason })
+}
+
+export async function closeCase(caseId: string, reason: string) {
+  return adminSend<AdminCase>("POST", `/admin/cases/${encodeURIComponent(caseId)}/close`, { reason })
+}
+
+export async function deleteCase(caseId: string) {
+  return adminSend("DELETE", `/admin/cases/${encodeURIComponent(caseId)}`)
+}
+
+export async function takeComplaint(complaintId: string) {
+  return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/take`)
+}
+
+export async function rejectComplaint(complaintId: string, comment: string) {
+  return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/reject`, {
+    comment,
+  })
+}
+
+export async function warnByComplaint(complaintId: string, comment: string) {
+  return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/warn`, {
+    comment,
+  })
+}
+
+export async function closeCaseByComplaint(complaintId: string, comment: string) {
+  return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/close-case`, {
+    comment,
+  })
 }
 
 export async function grantModerator(userId: string) {

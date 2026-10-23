@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Suspense } from "react"
-import { ArrowLeftIcon } from "lucide-react"
+import { ArrowLeftIcon, FlagIcon } from "lucide-react"
 
 import { ApiErrorAlert } from "@/components/admin/api-error-alert"
+import { CaseAdminActions } from "@/components/admin/case-admin-actions"
 import { ModerationActions } from "@/components/admin/moderation-actions"
 import { PageHeader } from "@/components/admin/page-header"
 import { CaseStatusBadge } from "@/components/admin/status-badges"
@@ -58,8 +59,28 @@ async function ModerationCase({ params }: { params: Promise<{ caseId: string }> 
           </span>
         }
       >
-        {item.status === "PENDING_REVIEW" && <ModerationActions caseId={item.id} />}
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            nativeButton={false}
+            render={<Link href={`/admin/complaints?status=&targetType=CASE&targetId=${item.id}`} />}
+          >
+            <FlagIcon data-icon="inline-start" />
+            Жалобы
+          </Button>
+          <CaseAdminActions caseId={item.id} title={item.title} status={item.status} />
+          {item.status === "PENDING_REVIEW" && <ModerationActions caseId={item.id} />}
+        </div>
       </PageHeader>
+      {item.status === "CLOSED" && item.closeComment && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Комментарий при закрытии</CardTitle>
+          </CardHeader>
+          <CardContent className="whitespace-pre-line">{item.closeComment}</CardContent>
+        </Card>
+      )}
       {item.status === "REJECTED" && item.rejectionReason && (
         <Card>
           <CardHeader>

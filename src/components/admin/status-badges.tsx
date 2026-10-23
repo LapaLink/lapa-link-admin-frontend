@@ -1,10 +1,11 @@
 import { Badge } from "@/components/ui/badge"
 import {
   CASE_STATUS_LABELS,
+  COMPLAINT_STATUS_LABELS,
   HELP_APPLICATION_STATUS_LABELS,
   USER_STATUS_LABELS,
 } from "@/lib/admin/labels"
-import type { CaseStatus, HelpApplicationStatus } from "@/lib/api/admin-types"
+import type { CaseStatus, ComplaintStatus, HelpApplicationStatus } from "@/lib/api/admin-types"
 import type { UserStatus } from "@/lib/api/types"
 
 type Variant = React.ComponentProps<typeof Badge>["variant"]
@@ -24,6 +25,13 @@ const CASE_STATUS_VARIANTS: Record<CaseStatus, Variant> = {
   CLOSED: "outline",
 }
 
+const COMPLAINT_STATUS_VARIANTS: Record<ComplaintStatus, Variant> = {
+  NEW: "default",
+  IN_PROGRESS: "secondary",
+  REJECTED: "outline",
+  RESOLVED: "outline",
+}
+
 const APPLICATION_STATUS_VARIANTS: Record<HelpApplicationStatus, Variant> = {
   PENDING: "outline",
   ACCEPTED: "secondary",
@@ -36,6 +44,10 @@ export function UserStatusBadge({ status }: { status: UserStatus }) {
 
 export function CaseStatusBadge({ status }: { status: CaseStatus }) {
   return <Badge variant={CASE_STATUS_VARIANTS[status]}>{CASE_STATUS_LABELS[status]}</Badge>
+}
+
+export function ComplaintStatusBadge({ status }: { status: ComplaintStatus }) {
+  return <Badge variant={COMPLAINT_STATUS_VARIANTS[status]}>{COMPLAINT_STATUS_LABELS[status]}</Badge>
 }
 
 export function HelpApplicationStatusBadge({ status }: { status: HelpApplicationStatus }) {

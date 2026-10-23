@@ -2,6 +2,9 @@ import type {
   AdminJob,
   AuditAction,
   CaseStatus,
+  ComplaintResolution,
+  ComplaintStatus,
+  ComplaintTargetType,
   HelpApplicationStatus,
   NeedStatus,
 } from "@/lib/api/admin-types"
@@ -76,12 +79,36 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   CASE_CLOSED: "Закрытие объявления",
   CASE_APPROVED: "Одобрение объявления",
   CASE_REJECTED: "Отклонение объявления",
+  CASE_CLOSED_BY_MODERATOR: "Закрытие объявления модератором",
+  CASE_DELETED: "Удаление объявления",
   HELP_APPLICATION_CREATED: "Отклик",
   CONVERSATION_REQUESTED: "Запрос чата",
   CONVERSATION_ACCEPTED: "Чат принят",
   CONVERSATION_DECLINED: "Чат отклонён",
   CONVERSATION_CLOSED: "Чат закрыт",
   CONVERSATION_REOPENED: "Чат открыт заново",
+  COMPLAINT_TAKEN: "Жалоба взята в работу",
+  COMPLAINT_REJECTED: "Жалоба отклонена",
+  COMPLAINT_WARNING_SENT: "Предупреждение по жалобе",
+  COMPLAINT_CASE_CLOSED: "Объявление закрыто по жалобе",
+}
+
+export const COMPLAINT_STATUS_LABELS: Record<ComplaintStatus, string> = {
+  NEW: "Новая",
+  IN_PROGRESS: "В работе",
+  REJECTED: "Отклонена",
+  RESOLVED: "Рассмотрена",
+}
+
+export const COMPLAINT_TARGET_LABELS: Record<ComplaintTargetType, string> = {
+  CASE: "Объявление",
+  USER: "Пользователь",
+}
+
+export const COMPLAINT_RESOLUTION_LABELS: Record<ComplaintResolution, string> = {
+  WARNING_SENT: "Отправлено предупреждение",
+  CASE_CLOSED: "Объявление закрыто",
+  CASE_DELETED: "Объявление удалено",
 }
 
 export const ADMIN_JOB_INFO: Record<AdminJob, { title: string; description: string }> = {

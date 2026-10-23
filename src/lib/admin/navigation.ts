@@ -1,6 +1,8 @@
 import {
   BookOpenIcon,
   DatabaseIcon,
+  FlagIcon,
+  FileTextIcon,
   LayoutDashboardIcon,
   MailIcon,
   ShieldCheckIcon,
@@ -32,6 +34,18 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         description: "Новые объявления, ожидающие проверки",
         href: "/admin/moderation",
         icon: ShieldCheckIcon,
+      },
+      {
+        title: "Жалобы",
+        description: "Жалобы пользователей на объявления и других пользователей",
+        href: "/admin/complaints",
+        icon: FlagIcon,
+      },
+      {
+        title: "Объявления",
+        description: "Все объявления: закрытие и удаление",
+        href: "/admin/cases",
+        icon: FileTextIcon,
       },
     ],
   },
