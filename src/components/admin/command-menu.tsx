@@ -17,9 +17,10 @@ import {
 } from "@/components/ui/command"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { logout } from "@/lib/auth/actions"
-import { NAVIGATION } from "@/lib/admin/navigation"
+import { getNavigation } from "@/lib/admin/navigation"
+import type { Privilege } from "@/lib/auth/privileges"
 
-export function CommandMenu() {
+export function CommandMenu({ privileges }: { privileges: Privilege[] }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [, startTransition] = useTransition()
@@ -64,7 +65,7 @@ export function CommandMenu() {
           <CommandInput placeholder="Раздел или действие…" />
           <CommandList>
             <CommandEmpty>Ничего не найдено</CommandEmpty>
-            {NAVIGATION.map((group, index) => (
+            {getNavigation(privileges).map((group, index) => (
               <CommandGroup key={index} heading={group.title ?? "Основное"}>
                 {group.items.map((item) => (
                   <CommandItem

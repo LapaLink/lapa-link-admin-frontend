@@ -39,15 +39,15 @@ const APPLICATION_STATUS_VARIANTS: Record<HelpApplicationStatus, Variant> = {
 }
 
 export function UserStatusBadge({ status }: { status: UserStatus }) {
-  return <Badge variant={USER_STATUS_VARIANTS[status]}>{USER_STATUS_LABELS[status]}</Badge>
+  return <Badge variant={USER_STATUS_VARIANTS[status] ?? "outline"}>{USER_STATUS_LABELS[status] ?? status}</Badge>
 }
 
 export function CaseStatusBadge({ status }: { status: CaseStatus }) {
-  return <Badge variant={CASE_STATUS_VARIANTS[status]}>{CASE_STATUS_LABELS[status]}</Badge>
+  return <Badge variant={CASE_STATUS_VARIANTS[status] ?? "outline"}>{CASE_STATUS_LABELS[status] ?? status}</Badge>
 }
 
 export function ComplaintStatusBadge({ status }: { status: ComplaintStatus }) {
-  return <Badge variant={COMPLAINT_STATUS_VARIANTS[status]}>{COMPLAINT_STATUS_LABELS[status]}</Badge>
+  return <Badge variant={COMPLAINT_STATUS_VARIANTS[status] ?? "outline"}>{COMPLAINT_STATUS_LABELS[status] ?? status}</Badge>
 }
 
 export function HelpApplicationStatusBadge({ status }: { status: HelpApplicationStatus }) {

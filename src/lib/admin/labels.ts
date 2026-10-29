@@ -91,6 +91,15 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   COMPLAINT_REJECTED: "Жалоба отклонена",
   COMPLAINT_WARNING_SENT: "Предупреждение по жалобе",
   COMPLAINT_CASE_CLOSED: "Объявление закрыто по жалобе",
+  COMPLAINT_TARGET_CLOSED: "Закрытие объекта по жалобе",
+  COMPLAINT_TARGET_VIEWED: "Просмотр объекта жалобы",
+  USER_LOCALE_UPDATED: "Смена языка",
+  USER_NOTIFICATION_PREFERENCE_UPDATE: "Изменение настроек уведомлений",
+  USER_UPLOAD_AVATAR: "Загрузка аватара",
+  USER_DELETE_AVATAR: "Удаление аватара",
+  USER_EMAIL_CHANGED_REQUEST: "Запрос смены email",
+  USER_LOGOUT: "Выход из аккаунта",
+  USER_FORGOT_PASSWORD: "Запрос восстановления пароля",
 }
 
 export const COMPLAINT_STATUS_LABELS: Record<ComplaintStatus, string> = {
@@ -103,12 +112,14 @@ export const COMPLAINT_STATUS_LABELS: Record<ComplaintStatus, string> = {
 export const COMPLAINT_TARGET_LABELS: Record<ComplaintTargetType, string> = {
   CASE: "Объявление",
   USER: "Пользователь",
+  CONVERSATION: "Чат",
 }
 
 export const COMPLAINT_RESOLUTION_LABELS: Record<ComplaintResolution, string> = {
   WARNING_SENT: "Отправлено предупреждение",
   CASE_CLOSED: "Объявление закрыто",
   CASE_DELETED: "Объявление удалено",
+  CHAT_CLOSED: "Чат закрыт",
 }
 
 export const ADMIN_JOB_INFO: Record<AdminJob, { title: string; description: string }> = {
@@ -123,5 +134,10 @@ export const ADMIN_JOB_INFO: Record<AdminJob, { title: string; description: stri
   NOTIFICATION_TEMPLATES_REFRESH: {
     title: "Перезагрузка шаблонов уведомлений",
     description: "Заново загружает шаблоны уведомлений и сбрасывает кэш их отрисовки.",
+  },
+  COMPLAINT_SNAPSHOT_CLEANUP: {
+    title: "Очистить снимки переписки",
+    description:
+      "Удаляет снимки переписки рассмотренных жалоб на чат старше 3 дней. По расписанию запускается раз в час.",
   },
 }

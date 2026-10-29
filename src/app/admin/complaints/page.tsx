@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Suspense } from "react"
+import { ArrowUpRightIcon } from "lucide-react"
 
 import { ApiErrorAlert } from "@/components/admin/api-error-alert"
 import { ComplaintActions } from "@/components/admin/complaint-actions"
@@ -10,6 +11,7 @@ import { PageHeader } from "@/components/admin/page-header"
 import { ComplaintStatusBadge } from "@/components/admin/status-badges"
 import { TablePagination } from "@/components/admin/table-pagination"
 import { NoResults, TableSkeleton } from "@/components/admin/table-states"
+import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import {
@@ -37,7 +39,7 @@ export default function ComplaintsPage({ searchParams }: PageProps<"/admin/compl
     <>
       <PageHeader
         title="Жалобы"
-        description="Жалобы пользователей на объявления и других пользователей, сначала самые старые. Пока модератор не принял решение, объект жалобы остаётся как есть."
+        description="Жалобы пользователей на объявления, других пользователей и чаты, сначала самые старые. Пока модератор не принял решение, объект жалобы остаётся как есть."
       />
       <Suspense fallback={<TableSkeleton />}>
         <Complaints searchParams={searchParams} />
@@ -106,11 +108,14 @@ async function Complaints({ searchParams }: { searchParams: Promise<SearchParams
                         href={
                           item.targetType === "CASE"
                             ? `/admin/moderation/${item.targetId}`
-                            : `/admin/users/${item.targetId}/cases`
+                            : item.targetType === "USER"
+                              ? `/admin/users/${item.targetId}/cases`
+                              : `/admin/complaints/${item.id}`
                         }
+                        prefetch={item.targetType === "CASE" || item.targetType === "USER" ? null : false}
                         className="underline-offset-4 hover:underline"
                       >
-                        {COMPLAINT_TARGET_LABELS[item.targetType]}
+                        {COMPLAINT_TARGET_LABELS[item.targetType] ?? item.targetType}
                       </Link>
                       <div className="text-xs text-muted-foreground">
                         от{" "}
@@ -124,14 +129,27 @@ async function Complaints({ searchParams }: { searchParams: Promise<SearchParams
                       <ComplaintStatusBadge status={item.status} />
                     </TableCell>
                     <TableCell className="max-w-64 text-sm">
-                      {item.resolution && <div>{COMPLAINT_RESOLUTION_LABELS[item.resolution]}</div>}
+                      {item.resolution && <div>{COMPLAINT_RESOLUTION_LABELS[item.resolution] ?? item.resolution}</div>}
                       {item.moderatorComment && (
                         <div className="whitespace-pre-line text-muted-foreground">{item.moderatorComment}</div>
                       )}
                       {!item.resolution && !item.moderatorComment && "—"}
                     </TableCell>
                     <TableCell>{formatDateTime(item.createdAt)}</TableCell>
-                    <TableCell className="text-right">{open && <ComplaintActions complaint={item} />}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          nativeButton={false}
+                          render={<Link href={`/admin/complaints/${item.id}`} prefetch={false} />}
+                        >
+                          <ArrowUpRightIcon data-icon="inline-start" />
+                          Открыть
+                        </Button>
+                        {open && <ComplaintActions complaint={item} />}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 )
               })}

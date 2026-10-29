@@ -4,20 +4,21 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type { Privilege } from "@/lib/auth/privileges"
 
-const TABS = [
+const TABS: { value: string; label: string; privilege?: Privilege }[] = [
   { value: "cases", label: "Объявления" },
   { value: "responses", label: "Отклики" },
-  { value: "events", label: "События" },
+  { value: "events", label: "События", privilege: "AUDIT_LOG_READ" },
 ]
 
-export function UserTabs({ userId }: { userId: string }) {
+export function UserTabs({ userId, privileges }: { userId: string; privileges: Privilege[] }) {
   const active = usePathname().split("/").at(-1)
 
   return (
     <Tabs value={active}>
       <TabsList>
-        {TABS.map((tab) => (
+        {TABS.filter((tab) => !tab.privilege || privileges.includes(tab.privilege)).map((tab) => (
           <TabsTrigger
             key={tab.value}
             value={tab.value}

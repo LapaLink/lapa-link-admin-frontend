@@ -11,11 +11,14 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
+import type { Privilege } from "@/lib/auth/privileges"
+
 export type NavigationItem = {
   title: string
   description: string
   href: string
   icon: LucideIcon
+  privilege?: Privilege
 }
 
 export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
@@ -37,9 +40,10 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
       },
       {
         title: "Жалобы",
-        description: "Жалобы пользователей на объявления и других пользователей",
+        description: "Жалобы пользователей на объявления, других пользователей и чаты",
         href: "/admin/complaints",
         icon: FlagIcon,
+        privilege: "CONTENT_MODERATE",
       },
       {
         title: "Объявления",
@@ -75,10 +79,19 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         description: "Запуск задач планировщика",
         href: "/admin/jobs",
         icon: TimerResetIcon,
+        privilege: "SETTINGS_MANAGE",
       },
     ],
   },
 ]
+
+/** Navigation without the items whose privilege the user lacks; groups left empty are dropped. */
+export function getNavigation(privileges: Privilege[]) {
+  return NAVIGATION.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => !item.privilege || privileges.includes(item.privilege)),
+  })).filter((group) => group.items.length > 0)
+}
 
 export function isActive(pathname: string | null, href: string) {
   if (!pathname) return false

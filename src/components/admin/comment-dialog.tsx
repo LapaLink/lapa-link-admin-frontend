@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
 import type { ApiError, ApiResult } from "@/lib/api/types"
 
-type Props = {
+type Props<T> = {
   trigger: React.ReactNode
   triggerVariant?: React.ComponentProps<typeof Button>["variant"]
   disabled?: boolean
@@ -34,11 +34,15 @@ type Props = {
   destructive?: boolean
   successTitle: string
   field: "reason" | "comment"
-  onSubmit: (text: string) => Promise<ApiResult<unknown>>
-  onSuccess: () => void
+  /** When set, the first submit only shows this warning; the request is sent on the second one. */
+  confirmation?: string
+  onSubmit: (text: string) => Promise<ApiResult<T>>
+  onSuccess: (data: T) => void
+  /** Return true when the caller has handled the error itself: the dialog then closes instead of showing it. */
+  onError?: (error: ApiError) => boolean
 }
 
-export function CommentDialog({
+export function CommentDialog<T>({
   trigger,
   triggerVariant = "outline",
   disabled,
@@ -51,35 +55,51 @@ export function CommentDialog({
   destructive,
   successTitle,
   field,
+  confirmation,
   onSubmit,
   onSuccess,
-}: Props) {
+  onError,
+}: Props<T>) {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<ApiError>()
+  const [confirming, setConfirming] = useState(false)
   const [pending, startTransition] = useTransition()
 
   function handleOpenChange(next: boolean) {
     setOpen(next)
-    if (next) setError(undefined)
+    if (next) {
+      setError(undefined)
+      setConfirming(false)
+    }
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const text = String(new FormData(event.currentTarget).get(field)).trim()
+    if (confirmation && !confirming) {
+      setConfirming(true)
+      return
+    }
 
     startTransition(async () => {
       const result = await onSubmit(text)
       if (!result.ok) {
+        if (onError?.(result.error)) {
+          setOpen(false)
+          return
+        }
         setError(result.error)
+        setConfirming(false)
         return
       }
       setOpen(false)
       toast.add({ title: successTitle, type: "success" })
-      onSuccess()
+      onSuccess(result.data)
     })
   }
 
-  const fieldError = error?.fields?.[field]
+  const fieldError =
+    error?.fields?.[field] ?? (error?.code === "VALIDATION_FAILED" ? error.message : undefined)
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -93,7 +113,7 @@ export function CommentDialog({
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
           <FieldGroup>
-            {error && !error.fields && (
+            {error && !error.fields && !fieldError && (
               <Alert variant="destructive">
                 <CircleAlertIcon />
                 <AlertDescription>{error.message}</AlertDescription>
@@ -109,16 +129,23 @@ export function CommentDialog({
                 rows={4}
                 placeholder={placeholder}
                 aria-invalid={Boolean(fieldError)}
+                onChange={() => setConfirming(false)}
               />
               <FieldDescription>{hint}</FieldDescription>
               <FieldError>{fieldError}</FieldError>
             </Field>
+            {confirming && (
+              <Alert variant="destructive">
+                <CircleAlertIcon />
+                <AlertDescription>{confirmation}</AlertDescription>
+              </Alert>
+            )}
           </FieldGroup>
           <DialogFooter>
             <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
             <Button type="submit" variant={destructive ? "destructive" : "default"} disabled={pending}>
               {pending && <Spinner data-icon="inline-start" />}
-              {submitLabel}
+              {confirming ? "Подтвердить" : submitLabel}
             </Button>
           </DialogFooter>
         </form>

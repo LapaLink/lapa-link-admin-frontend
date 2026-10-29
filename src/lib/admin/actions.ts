@@ -61,6 +61,10 @@ export async function deleteCase(caseId: string) {
   return adminSend("DELETE", `/admin/cases/${encodeURIComponent(caseId)}`)
 }
 
+export async function getComplaint(complaintId: string) {
+  return adminGet<AdminComplaint>(`/admin/complaints/${encodeURIComponent(complaintId)}`)
+}
+
 export async function takeComplaint(complaintId: string) {
   return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/take`)
 }
@@ -77,8 +81,8 @@ export async function warnByComplaint(complaintId: string, comment: string) {
   })
 }
 
-export async function closeCaseByComplaint(complaintId: string, comment: string) {
-  return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/close-case`, {
+export async function closeComplaintTarget(complaintId: string, comment: string) {
+  return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/close-target`, {
     comment,
   })
 }

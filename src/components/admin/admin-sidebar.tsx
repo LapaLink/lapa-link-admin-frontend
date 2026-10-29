@@ -18,9 +18,10 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { NAVIGATION, isActive } from "@/lib/admin/navigation"
+import { getNavigation, isActive } from "@/lib/admin/navigation"
+import type { Privilege } from "@/lib/auth/privileges"
 
-export function AdminSidebar({ footer }: { footer: React.ReactNode }) {
+export function AdminSidebar({ navigation, footer }: { navigation: React.ReactNode; footer: React.ReactNode }) {
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
@@ -38,11 +39,7 @@ export function AdminSidebar({ footer }: { footer: React.ReactNode }) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <Suspense fallback={<Navigation pathname={null} />}>
-          <ActiveNavigation />
-        </Suspense>
-      </SidebarContent>
+      <SidebarContent>{navigation}</SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>{footer}</SidebarMenuItem>
@@ -53,12 +50,20 @@ export function AdminSidebar({ footer }: { footer: React.ReactNode }) {
   )
 }
 
-function ActiveNavigation() {
-  return <Navigation pathname={usePathname()} />
+export function AdminNavigation({ privileges }: { privileges: Privilege[] }) {
+  return (
+    <Suspense fallback={<Navigation privileges={privileges} pathname={null} />}>
+      <ActiveNavigation privileges={privileges} />
+    </Suspense>
+  )
 }
 
-function Navigation({ pathname }: { pathname: string | null }) {
-  return NAVIGATION.map((group, index) => (
+function ActiveNavigation({ privileges }: { privileges: Privilege[] }) {
+  return <Navigation privileges={privileges} pathname={usePathname()} />
+}
+
+function Navigation({ privileges, pathname }: { privileges: Privilege[]; pathname: string | null }) {
+  return getNavigation(privileges).map((group, index) => (
     <SidebarGroup key={index}>
       {group.title && <SidebarGroupLabel>{group.title}</SidebarGroupLabel>}
       <SidebarGroupContent>

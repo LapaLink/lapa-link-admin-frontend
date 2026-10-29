@@ -87,9 +87,9 @@ export type AdminCase = {
 
 export type ComplaintStatus = "NEW" | "IN_PROGRESS" | "REJECTED" | "RESOLVED"
 
-export type ComplaintTargetType = "CASE" | "USER"
+export type ComplaintTargetType = "CASE" | "USER" | "CONVERSATION"
 
-export type ComplaintResolution = "WARNING_SENT" | "CASE_CLOSED" | "CASE_DELETED"
+export type ComplaintResolution = "WARNING_SENT" | "CASE_CLOSED" | "CASE_DELETED" | "CHAT_CLOSED"
 
 export type AdminComplaint = {
   id: string
@@ -105,6 +105,36 @@ export type AdminComplaint = {
   createdAt: string
   updatedAt: string
 }
+
+export type ComplaintChatMessage = {
+  messageId: string
+  senderId: string
+  text: string | null
+  createdAt: string
+  editedAt: string | null
+  deletedAt: string | null
+}
+
+export type ComplaintTarget =
+  | {
+      type: "CASE"
+      caseId: string
+      authorId: string
+      title: string
+      description: string | null
+      status: CaseStatus
+      closedAt: string | null
+    }
+  | { type: "USER"; userId: string; displayName: string | null; status: UserStatus }
+  | {
+      type: "CONVERSATION"
+      conversationId: string
+      chatTargetType: "CASE" | null
+      chatTargetId: string | null
+      chatTitle: string | null
+      participantIds: string[]
+      messages: ComplaintChatMessage[]
+    }
 
 export type HelpApplicationStatus = "PENDING" | "ACCEPTED" | "CANCELLED"
 
@@ -161,6 +191,15 @@ export const AUDIT_ACTIONS = [
   "COMPLAINT_REJECTED",
   "COMPLAINT_WARNING_SENT",
   "COMPLAINT_CASE_CLOSED",
+  "COMPLAINT_TARGET_CLOSED",
+  "COMPLAINT_TARGET_VIEWED",
+  "USER_LOCALE_UPDATED",
+  "USER_NOTIFICATION_PREFERENCE_UPDATE",
+  "USER_UPLOAD_AVATAR",
+  "USER_DELETE_AVATAR",
+  "USER_EMAIL_CHANGED_REQUEST",
+  "USER_LOGOUT",
+  "USER_FORGOT_PASSWORD",
 ] as const
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]
@@ -242,6 +281,7 @@ export const ADMIN_JOBS = [
   "NOTIFICATION_CLEANUP",
   "AUDIT_PARTITIONS",
   "NOTIFICATION_TEMPLATES_REFRESH",
+  "COMPLAINT_SNAPSHOT_CLEANUP",
 ] as const
 
 export type AdminJob = (typeof ADMIN_JOBS)[number]

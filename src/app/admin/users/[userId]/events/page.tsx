@@ -8,7 +8,7 @@ import { FilterForm } from "@/components/admin/filter-form"
 import { TablePagination } from "@/components/admin/table-pagination"
 import { NoResults, TableSkeleton } from "@/components/admin/table-states"
 import { Badge } from "@/components/ui/badge"
-import { Field, FieldLabel } from "@/components/ui/field"
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import {
@@ -21,6 +21,7 @@ import {
 import { adminGet } from "@/lib/admin/api"
 import {
   formatDateTime,
+  localDateTimeDaysAgo,
   localDateTimeToInstant,
   pickParams,
   type SearchParams,
@@ -31,6 +32,9 @@ import { AUDIT_ACTIONS, type AuditLogEntry, type Page } from "@/lib/api/admin-ty
 export const metadata: Metadata = { title: "События пользователя" }
 
 const PARAMS = ["action", "outcome", "from", "to", "size", "page"] as const
+
+// The backend deletes audit log entries older than this on a schedule.
+const RETENTION_DAYS = 30
 
 export default function UserEventsPage({ params, searchParams }: PageProps<"/admin/users/[userId]/events">) {
   return (
@@ -49,6 +53,7 @@ async function UserEvents({
 }) {
   const { userId } = await params
   const query = pickParams(await searchParams, PARAMS)
+  const minFrom = localDateTimeDaysAgo(RETENTION_DAYS)
   const result = await adminGet<Page<AuditLogEntry>>(`/admin/users/${userId}/events`, {
     ...query,
     from: localDateTimeToInstant(query.from),
@@ -64,7 +69,7 @@ async function UserEvents({
             <NativeSelectOption value="">Все</NativeSelectOption>
             {AUDIT_ACTIONS.map((action) => (
               <NativeSelectOption key={action} value={action}>
-                {AUDIT_ACTION_LABELS[action]}
+                {AUDIT_ACTION_LABELS[action] ?? action}
               </NativeSelectOption>
             ))}
           </NativeSelect>
@@ -79,7 +84,8 @@ async function UserEvents({
         </Field>
         <Field className="w-auto">
           <FieldLabel htmlFor="from">С (включительно)</FieldLabel>
-          <Input id="from" name="from" type="datetime-local" defaultValue={query.from} />
+          <Input id="from" name="from" type="datetime-local" min={minFrom} defaultValue={query.from} />
+          <FieldDescription>Журнал хранит события за последние {RETENTION_DAYS} дней</FieldDescription>
         </Field>
         <Field className="w-auto">
           <FieldLabel htmlFor="to">По (не включительно)</FieldLabel>

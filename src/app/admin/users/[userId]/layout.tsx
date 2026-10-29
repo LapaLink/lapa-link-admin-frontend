@@ -6,6 +6,8 @@ import { PageHeader } from "@/components/admin/page-header"
 import { UserTabs } from "@/components/admin/user-tabs"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { getCurrentUser } from "@/lib/auth/current-user"
+import { getPrivileges } from "@/lib/auth/privileges"
 
 export default function UserLayout({ children, params }: LayoutProps<"/admin/users/[userId]">) {
   return (
@@ -25,7 +27,7 @@ export default function UserLayout({ children, params }: LayoutProps<"/admin/use
 }
 
 async function UserHeader({ params }: Pick<LayoutProps<"/admin/users/[userId]">, "params">) {
-  const { userId } = await params
+  const [{ userId }, user] = await Promise.all([params, getCurrentUser()])
 
   return (
     <>
@@ -33,7 +35,7 @@ async function UserHeader({ params }: Pick<LayoutProps<"/admin/users/[userId]">,
         title="Пользователь"
         description={<span className="font-mono">{userId}</span>}
       />
-      <UserTabs userId={userId} />
+      <UserTabs userId={userId} privileges={getPrivileges(user)} />
     </>
   )
 }

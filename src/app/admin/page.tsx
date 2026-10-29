@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { adminGet } from "@/lib/admin/api"
 import { formatDateTime } from "@/lib/admin/format"
 import { ROLE_LABELS } from "@/lib/admin/labels"
-import { NAVIGATION } from "@/lib/admin/navigation"
+import { getNavigation } from "@/lib/admin/navigation"
 import type {
   AdminUser,
   CacheKeys,
@@ -19,12 +19,11 @@ import type {
   Page,
 } from "@/lib/api/admin-types"
 import { getCurrentUser } from "@/lib/auth/current-user"
+import { getPrivileges } from "@/lib/auth/privileges"
 
 export const metadata: Metadata = {
   title: "Обзор",
 }
-
-const SECTIONS = NAVIGATION.flatMap((group) => group.items).filter((item) => item.href !== "/admin")
 
 export default function AdminPage() {
   return (
@@ -52,28 +51,39 @@ export default function AdminPage() {
         <Stats />
       </Suspense>
       <h2 className="pt-4 text-lg font-semibold md:col-span-2 xl:col-span-4">Разделы</h2>
-      {SECTIONS.map((section) => (
-        <Link
-          key={section.href}
-          href={section.href}
-          className="group/section rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-        >
-          <Card className="h-full transition-colors group-hover/section:bg-muted/50">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
-                  <section.icon />
-                </div>
-                <ArrowUpRightIcon className="text-muted-foreground transition-transform group-hover/section:translate-x-0.5 group-hover/section:-translate-y-0.5" />
-              </div>
-              <CardTitle>{section.title}</CardTitle>
-              <CardDescription>{section.description}</CardDescription>
-            </CardHeader>
-          </Card>
-        </Link>
-      ))}
+      <Suspense fallback={null}>
+        <Sections />
+      </Suspense>
     </div>
   )
+}
+
+async function Sections() {
+  const user = await getCurrentUser()
+  const sections = getNavigation(getPrivileges(user))
+    .flatMap((group) => group.items)
+    .filter((item) => item.href !== "/admin")
+
+  return sections.map((section) => (
+    <Link
+      key={section.href}
+      href={section.href}
+      className="group/section rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+    >
+      <Card className="h-full transition-colors group-hover/section:bg-muted/50">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <section.icon />
+            </div>
+            <ArrowUpRightIcon className="text-muted-foreground transition-transform group-hover/section:translate-x-0.5 group-hover/section:-translate-y-0.5" />
+          </div>
+          <CardTitle>{section.title}</CardTitle>
+          <CardDescription>{section.description}</CardDescription>
+        </CardHeader>
+      </Card>
+    </Link>
+  ))
 }
 
 async function Greeting() {
