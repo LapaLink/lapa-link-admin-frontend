@@ -7,6 +7,7 @@ import type {
   ComplaintTargetType,
   HelpApplicationStatus,
   NeedStatus,
+  StatusHistoryTargetType,
 } from "@/lib/api/admin-types"
 import type { RoleCode, UserStatus } from "@/lib/api/types"
 
@@ -25,6 +26,7 @@ export const ROLE_LABELS: Record<RoleCode, string> = {
 }
 
 export const CASE_STATUS_LABELS: Record<CaseStatus, string> = {
+  DRAFT: "Черновик",
   PENDING_REVIEW: "На рассмотрении",
   OPEN: "Открыто",
   REJECTED: "Отклонено",
@@ -58,6 +60,56 @@ export const NEED_STATUS_LABELS: Record<NeedStatus, string> = {
   OPEN: "Открыта",
   ASSIGNED: "Назначена",
   CLOSED: "Закрыта",
+}
+
+// Moderators never see drafts in admin lists, so status filters leave DRAFT out.
+export const CASE_STATUS_FILTER_OPTIONS = Object.entries(CASE_STATUS_LABELS).filter(([value]) => value !== "DRAFT")
+
+export const STATUS_HISTORY_TARGET_LABELS: Record<StatusHistoryTargetType, string> = {
+  CASE: "Объявление",
+  NEED: "Потребность",
+  ASSIGNMENT: "Назначение",
+  HELP_APPLICATION: "Отклик",
+}
+
+export const STATUS_HISTORY_STATUS_LABELS: Record<StatusHistoryTargetType, Record<string, string>> = {
+  CASE: {
+    DRAFT: "черновик",
+    PENDING_REVIEW: "на модерации",
+    OPEN: "открыто",
+    REJECTED: "отклонено",
+    CLOSED: "закрыто",
+  },
+  NEED: { OPEN: "открыта", ASSIGNED: "исполнитель выбран", CLOSED: "закрыта" },
+  ASSIGNMENT: { ACTIVE: "выполняется", COMPLETED: "завершено", CANCELLED: "отменено" },
+  HELP_APPLICATION: { PENDING: "ожидает", ACCEPTED: "принят", CANCELLED: "отменён" },
+}
+
+export const NOTIFICATION_EVENT_LABELS: Record<string, string> = {
+  EMAIL_VERIFICATION: "Подтверждение email",
+  PASSWORD_RESET: "Сброс пароля",
+  EMAIL_CHANGE: "Смена email",
+  WELCOME: "Приветствие",
+  CASE_APPLICATION_CREATED: "Новый отклик",
+  CASE_APPLICATION_CANCELLED: "Отклик отозван",
+  CASE_APPLICATION_UPDATED: "Отклик изменён",
+  CASE_APPLICATION_ACCEPTED: "Отклик принят",
+  CASE_NEED_STATUS_CHANGED: "Статус потребности изменён",
+  CASE_CLOSED: "Объявление закрыто",
+  CASE_MODERATION_REQUIRED: "Объявление ждёт модерации",
+  CASE_APPROVED: "Объявление одобрено",
+  CASE_REJECTED: "Объявление отклонено",
+  CASE_CLOSED_BY_MODERATOR: "Объявление закрыто модератором",
+  CASE_ASSIGNMENT_COMPLETED: "Назначение завершено",
+  CASE_ASSIGNMENT_DECLINED: "Исполнитель отказался",
+  CASE_ASSIGNMENT_CANCELLED: "Автор отменил назначение",
+  NEED_DEADLINE_APPROACHING: "Приближается срок потребности",
+  NEED_EXPIRED: "Срок потребности истёк",
+  CHAT_REQUESTED: "Запрос чата",
+  CHAT_ACCEPTED: "Чат принят",
+  CHAT_DECLINED: "Чат отклонён",
+  HELP_OFFER_MATCHED: "Подходящее объявление",
+  MODERATION_WARNING: "Предупреждение модератора",
 }
 
 export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {

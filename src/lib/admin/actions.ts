@@ -11,6 +11,7 @@ import type {
   NeedType,
   NotificationTemplate,
   NotificationTemplateContent,
+  StatusHistoryItem,
 } from "@/lib/api/admin-types"
 
 export type NeedTypeInput = {
@@ -51,6 +52,10 @@ export async function approveCase(caseId: string) {
 
 export async function rejectCase(caseId: string, reason: string) {
   return adminSend("POST", `/admin/cases/${encodeURIComponent(caseId)}/reject`, { reason })
+}
+
+export async function getCaseHistory(caseId: string) {
+  return adminGet<StatusHistoryItem[]>(`/cases/${encodeURIComponent(caseId)}/history`)
 }
 
 export async function closeCase(caseId: string, reason: string) {

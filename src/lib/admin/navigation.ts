@@ -31,12 +31,14 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         description: "Поиск, объявления, отклики и журнал событий",
         href: "/admin/users",
         icon: UsersIcon,
+        privilege: "USER_READ",
       },
       {
         title: "Модерация",
         description: "Новые объявления, ожидающие проверки",
         href: "/admin/moderation",
         icon: ShieldCheckIcon,
+        privilege: "CONTENT_MODERATE",
       },
       {
         title: "Жалобы",
@@ -73,6 +75,7 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         description: "Просмотр email и in-app шаблонов",
         href: "/admin/notification-templates",
         icon: MailIcon,
+        privilege: "SETTINGS_MANAGE",
       },
       {
         title: "Фоновые задачи",

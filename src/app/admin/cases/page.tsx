@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table"
 import { adminGet } from "@/lib/admin/api"
 import { formatDateTime, pickParams, type SearchParams } from "@/lib/admin/format"
-import { ANIMAL_TYPE_LABELS, CASE_STATUS_LABELS } from "@/lib/admin/labels"
+import { ANIMAL_TYPE_LABELS, CASE_STATUS_FILTER_OPTIONS } from "@/lib/admin/labels"
 import type { AdminCase, Page } from "@/lib/api/admin-types"
 
 export const metadata: Metadata = { title: "Объявления" }
@@ -59,7 +59,7 @@ async function Cases({ searchParams }: { searchParams: Promise<SearchParams> }) 
           <FieldLabel htmlFor="status">Статус</FieldLabel>
           <NativeSelect id="status" name="status" defaultValue={query.status ?? ""}>
             <NativeSelectOption value="">Все</NativeSelectOption>
-            {Object.entries(CASE_STATUS_LABELS).map(([value, label]) => (
+            {CASE_STATUS_FILTER_OPTIONS.map(([value, label]) => (
               <NativeSelectOption key={value} value={value}>
                 {label}
               </NativeSelectOption>

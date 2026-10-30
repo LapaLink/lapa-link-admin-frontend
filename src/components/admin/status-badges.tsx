@@ -19,6 +19,7 @@ const USER_STATUS_VARIANTS: Record<UserStatus, Variant> = {
 }
 
 const CASE_STATUS_VARIANTS: Record<CaseStatus, Variant> = {
+  DRAFT: "outline",
   PENDING_REVIEW: "default",
   OPEN: "secondary",
   REJECTED: "destructive",

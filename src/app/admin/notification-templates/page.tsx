@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { adminGet } from "@/lib/admin/api"
+import { NOTIFICATION_EVENT_LABELS } from "@/lib/admin/labels"
 import type { NotificationTemplate } from "@/lib/api/admin-types"
 
 export const metadata: Metadata = { title: "Шаблоны уведомлений" }
@@ -63,7 +64,10 @@ async function TemplatesTable() {
       <TableBody>
         {templates.map((template) => (
           <TableRow key={`${template.eventType}:${template.channel}`}>
-            <TableCell className="font-mono text-xs">{template.eventType}</TableCell>
+            <TableCell>
+              {NOTIFICATION_EVENT_LABELS[template.eventType] ?? template.eventType}
+              <div className="font-mono text-xs text-muted-foreground">{template.eventType}</div>
+            </TableCell>
             <TableCell>{CHANNEL_LABELS[template.channel] ?? template.channel}</TableCell>
             <TableCell>
               <div className="flex gap-1">

@@ -22,7 +22,7 @@ export type AdminUser = {
   createdAt: string
 }
 
-export type CaseStatus = "PENDING_REVIEW" | "OPEN" | "REJECTED" | "CLOSED"
+export type CaseStatus = "DRAFT" | "PENDING_REVIEW" | "OPEN" | "REJECTED" | "CLOSED"
 
 export type AnimalType = "CAT" | "DOG"
 
@@ -135,6 +135,20 @@ export type ComplaintTarget =
       participantIds: string[]
       messages: ComplaintChatMessage[]
     }
+
+export type StatusHistoryTargetType = "CASE" | "NEED" | "ASSIGNMENT" | "HELP_APPLICATION"
+
+export type StatusHistoryItem = {
+  id: number
+  targetType: StatusHistoryTargetType
+  targetId: string
+  needId: string | null
+  fromStatus: string | null
+  toStatus: string
+  actorId: string | null
+  reason: string | null
+  createdAt: string
+}
 
 export type HelpApplicationStatus = "PENDING" | "ACCEPTED" | "CANCELLED"
 

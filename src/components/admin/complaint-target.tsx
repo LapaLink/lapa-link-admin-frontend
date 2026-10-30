@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRightIcon, CircleAlertIcon } from "lucide-react"
 
+import { CaseHistory, CaseTabs } from "@/components/admin/case-history"
 import { JsonView } from "@/components/admin/json-view"
 import { CaseStatusBadge, UserStatusBadge } from "@/components/admin/status-badges"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -27,7 +28,7 @@ export function ComplaintTargetView({
 }) {
   switch (target.type) {
     case "CASE":
-      return <CaseTargetView target={target} />
+      return <CaseTargetView target={target} privileges={privileges} />
     case "USER":
       return <UserTargetView target={target} privileges={privileges} />
     case "CONVERSATION":
@@ -43,7 +44,7 @@ export function ComplaintTargetView({
   }
 }
 
-function CaseTargetView({ target }: { target: CaseTarget }) {
+function CaseTargetView({ target, privileges }: { target: CaseTarget; privileges: Privilege[] }) {
   return (
     <Card>
       <CardHeader>
@@ -54,28 +55,39 @@ function CaseTargetView({ target }: { target: CaseTarget }) {
           {target.closedAt && <span>Закрыто {formatDateTime(target.closedAt)}</span>}
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <p className="line-clamp-4 whitespace-pre-line">{target.description || "—"}</p>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={`/admin/moderation/${target.caseId}`} />}
-          >
-            <ArrowUpRightIcon data-icon="inline-start" />
-            Полная карточка объявления
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={`/admin/users/${target.authorId}/cases`} />}
-          >
-            <ArrowUpRightIcon data-icon="inline-start" />
-            Автор объявления
-          </Button>
-        </div>
+      <CardContent>
+        <CaseTabs
+          history={
+            <CaseHistory
+              caseId={target.caseId}
+              authorId={target.authorId}
+              needs={[]}
+              canReadUsers={privileges.includes("USER_READ")}
+            />
+          }
+        >
+          <p className="line-clamp-4 whitespace-pre-line">{target.description || "—"}</p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={<Link href={`/admin/moderation/${target.caseId}`} />}
+            >
+              <ArrowUpRightIcon data-icon="inline-start" />
+              Полная карточка объявления
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={<Link href={`/admin/users/${target.authorId}/cases`} />}
+            >
+              <ArrowUpRightIcon data-icon="inline-start" />
+              Автор объявления
+            </Button>
+          </div>
+        </CaseTabs>
       </CardContent>
     </Card>
   )
