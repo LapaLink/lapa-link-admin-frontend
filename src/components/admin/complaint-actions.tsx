@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { HandIcon, LockIcon, MailWarningIcon, XIcon } from "lucide-react"
+import { EyeOffIcon, HandIcon, LockIcon, MailWarningIcon, XIcon } from "lucide-react"
 
 import { CommentDialog } from "@/components/admin/comment-dialog"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
 import {
   closeComplaintTarget,
+  hideComplaintTarget,
   rejectComplaint,
   takeComplaint,
   warnByComplaint,
@@ -62,7 +63,14 @@ const CLOSE_TARGET: Partial<
 
 const TARGET_NOT_FOUND = ["CASE_NOT_FOUND", "CONVERSATION_NOT_FOUND", "USER_NOT_FOUND"]
 
-const TOAST_ERRORS = ["ACCESS_DENIED", "CASE_CLOSED", "CASE_NOT_PUBLISHED", "COMPLAINT_TARGET_NOT_CLOSABLE"]
+const TOAST_ERRORS = [
+  "ACCESS_DENIED",
+  "CASE_CLOSED",
+  "CASE_HIDDEN",
+  "CASE_NOT_PUBLISHED",
+  "COMPLAINT_TARGET_NOT_CLOSABLE",
+  "COMPLAINT_TARGET_NOT_HIDEABLE",
+]
 
 /**
  * Decisions on an open complaint, limited to what the backend allows for its target type.
@@ -169,6 +177,29 @@ export function ComplaintActions({
           onSubmit={(text) => warnByComplaint(complaint.id, text)}
           onSuccess={update}
           onError={(error) => handleError("Не удалось отправить предупреждение", error)}
+        />
+      )}
+      {complaint.targetType === "CASE" && !targetGone && (
+        <CommentDialog
+          trigger={
+            <>
+              <EyeOffIcon data-icon="inline-start" />
+              Скрыть объявление
+            </>
+          }
+          disabled={taking}
+          title="Скрытие объявления"
+          description="Скрыть — временно, автор может исправить; закрыть — навсегда. Объявление пропадёт из ленты, другие необработанные жалобы на него тоже будут закрыты."
+          label="Причина"
+          hint="До 500 символов. Автор увидит причину. Скрытие можно отменить"
+          placeholder="Например: в описании указан номер телефона"
+          submitLabel="Скрыть объявление"
+          destructive
+          successTitle="Объявление скрыто"
+          field="comment"
+          onSubmit={(text) => hideComplaintTarget(complaint.id, text)}
+          onSuccess={update}
+          onError={(error) => handleError("Не удалось скрыть объявление", error)}
         />
       )}
       {close && !targetGone && (

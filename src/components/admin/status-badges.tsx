@@ -24,6 +24,7 @@ const CASE_STATUS_VARIANTS: Record<CaseStatus, Variant> = {
   OPEN: "secondary",
   REJECTED: "destructive",
   CLOSED: "outline",
+  HIDDEN: "destructive",
 }
 
 const COMPLAINT_STATUS_VARIANTS: Record<ComplaintStatus, Variant> = {

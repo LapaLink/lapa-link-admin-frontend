@@ -8,6 +8,8 @@ import type {
   AdminUser,
   CacheEntry,
   CacheType,
+  Faq,
+  FaqInput,
   NeedType,
   NotificationTemplate,
   NotificationTemplateContent,
@@ -54,6 +56,14 @@ export async function rejectCase(caseId: string, reason: string) {
   return adminSend("POST", `/admin/cases/${encodeURIComponent(caseId)}/reject`, { reason })
 }
 
+export async function hideCase(caseId: string, reason: string) {
+  return adminSend<AdminCase>("POST", `/admin/cases/${encodeURIComponent(caseId)}/hide`, { reason })
+}
+
+export async function restoreCase(caseId: string) {
+  return adminSend<AdminCase>("POST", `/admin/cases/${encodeURIComponent(caseId)}/restore`)
+}
+
 export async function getCaseHistory(caseId: string) {
   return adminGet<StatusHistoryItem[]>(`/cases/${encodeURIComponent(caseId)}/history`)
 }
@@ -90,6 +100,24 @@ export async function closeComplaintTarget(complaintId: string, comment: string)
   return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/close-target`, {
     comment,
   })
+}
+
+export async function hideComplaintTarget(complaintId: string, comment: string) {
+  return adminSend<AdminComplaint>("POST", `/admin/complaints/${encodeURIComponent(complaintId)}/hide-target`, {
+    comment,
+  })
+}
+
+export async function createFaq(input: FaqInput) {
+  return adminSend<Faq>("POST", "/admin/faq", input)
+}
+
+export async function updateFaq(id: string, input: FaqInput) {
+  return adminSend<Faq>("PUT", `/admin/faq/${encodeURIComponent(id)}`, input)
+}
+
+export async function deleteFaq(id: string) {
+  return adminSend("DELETE", `/admin/faq/${encodeURIComponent(id)}`)
 }
 
 export async function grantModerator(userId: string) {

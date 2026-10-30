@@ -31,6 +31,7 @@ export const CASE_STATUS_LABELS: Record<CaseStatus, string> = {
   OPEN: "Открыто",
   REJECTED: "Отклонено",
   CLOSED: "Закрыто",
+  HIDDEN: "Скрыто модератором",
 }
 
 export const ANIMAL_SEX_LABELS: Record<string, string> = {
@@ -79,6 +80,7 @@ export const STATUS_HISTORY_STATUS_LABELS: Record<StatusHistoryTargetType, Recor
     OPEN: "открыто",
     REJECTED: "отклонено",
     CLOSED: "закрыто",
+    HIDDEN: "скрыто",
   },
   NEED: { OPEN: "открыта", ASSIGNED: "исполнитель выбран", CLOSED: "закрыта" },
   ASSIGNMENT: { ACTIVE: "выполняется", COMPLETED: "завершено", CANCELLED: "отменено" },
@@ -100,6 +102,8 @@ export const NOTIFICATION_EVENT_LABELS: Record<string, string> = {
   CASE_APPROVED: "Объявление одобрено",
   CASE_REJECTED: "Объявление отклонено",
   CASE_CLOSED_BY_MODERATOR: "Объявление закрыто модератором",
+  CASE_HIDDEN: "Объявление скрыто",
+  CASE_RESTORED: "Объявление восстановлено",
   CASE_ASSIGNMENT_COMPLETED: "Назначение завершено",
   CASE_ASSIGNMENT_DECLINED: "Исполнитель отказался",
   CASE_ASSIGNMENT_CANCELLED: "Автор отменил назначение",
@@ -133,6 +137,8 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   CASE_REJECTED: "Отклонение объявления",
   CASE_CLOSED_BY_MODERATOR: "Закрытие объявления модератором",
   CASE_DELETED: "Удаление объявления",
+  CASE_HIDDEN: "Объявление скрыто",
+  CASE_RESTORED: "Объявление восстановлено",
   HELP_APPLICATION_CREATED: "Отклик",
   CONVERSATION_REQUESTED: "Запрос чата",
   CONVERSATION_ACCEPTED: "Чат принят",
@@ -145,6 +151,7 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   COMPLAINT_CASE_CLOSED: "Объявление закрыто по жалобе",
   COMPLAINT_TARGET_CLOSED: "Закрытие объекта по жалобе",
   COMPLAINT_TARGET_VIEWED: "Просмотр объекта жалобы",
+  COMPLAINT_TARGET_HIDDEN: "Объект жалобы скрыт",
   USER_LOCALE_UPDATED: "Смена языка",
   USER_NOTIFICATION_PREFERENCE_UPDATE: "Изменение настроек уведомлений",
   USER_UPLOAD_AVATAR: "Загрузка аватара",
@@ -172,6 +179,7 @@ export const COMPLAINT_RESOLUTION_LABELS: Record<ComplaintResolution, string> = 
   CASE_CLOSED: "Объявление закрыто",
   CASE_DELETED: "Объявление удалено",
   CHAT_CLOSED: "Чат закрыт",
+  CASE_HIDDEN: "Объявление скрыто",
 }
 
 export const ADMIN_JOB_INFO: Record<AdminJob, { title: string; description: string }> = {

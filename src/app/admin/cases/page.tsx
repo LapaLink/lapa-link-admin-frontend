@@ -7,6 +7,7 @@ import { ApiErrorAlert } from "@/components/admin/api-error-alert"
 import { DataTable } from "@/components/admin/data-table"
 import { FilterForm } from "@/components/admin/filter-form"
 import { PageHeader } from "@/components/admin/page-header"
+import { CaseVisibilityActions } from "@/components/admin/case-visibility-actions"
 import { CaseStatusBadge } from "@/components/admin/status-badges"
 import { TablePagination } from "@/components/admin/table-pagination"
 import { NoResults, TableSkeleton } from "@/components/admin/table-states"
@@ -102,15 +103,18 @@ async function Cases({ searchParams }: { searchParams: Promise<SearchParams> }) 
                   </TableCell>
                   <TableCell>{formatDateTime(item.createdAt)}</TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      nativeButton={false}
-                      render={<Link href={`/admin/moderation/${item.id}`} />}
-                    >
-                      Открыть
-                      <ArrowRightIcon data-icon="inline-end" />
-                    </Button>
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <CaseVisibilityActions caseId={item.id} status={item.status} />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        nativeButton={false}
+                        render={<Link href={`/admin/moderation/${item.id}`} />}
+                      >
+                        Открыть
+                        <ArrowRightIcon data-icon="inline-end" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

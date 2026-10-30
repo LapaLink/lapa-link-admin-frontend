@@ -1,11 +1,13 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Suspense } from "react"
-import { ArrowLeftIcon, FlagIcon } from "lucide-react"
+import { ArrowLeftIcon, EyeOffIcon, FlagIcon } from "lucide-react"
 
 import { ApiErrorAlert } from "@/components/admin/api-error-alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CaseAdminActions } from "@/components/admin/case-admin-actions"
 import { CaseHistory, CaseTabs } from "@/components/admin/case-history"
+import { CaseVisibilityActions } from "@/components/admin/case-visibility-actions"
 import { ModerationActions } from "@/components/admin/moderation-actions"
 import { PageHeader } from "@/components/admin/page-header"
 import { NoResults } from "@/components/admin/table-states"
@@ -82,10 +84,21 @@ async function ModerationCase({ params }: { params: Promise<{ caseId: string }> 
             <FlagIcon data-icon="inline-start" />
             Жалобы
           </Button>
+          <CaseVisibilityActions caseId={item.id} status={item.status} />
           <CaseAdminActions caseId={item.id} title={item.title} status={item.status} />
           {item.status === "PENDING_REVIEW" && <ModerationActions caseId={item.id} />}
         </div>
       </PageHeader>
+      {item.status === "HIDDEN" && (
+        <Alert variant="destructive">
+          <EyeOffIcon />
+          <AlertTitle>Скрыто модератором</AlertTitle>
+          <AlertDescription className="whitespace-pre-line">
+            {item.hideReason ?? "Причина не указана"}
+            {"\n"}Кто и когда скрыл — во вкладке «История».
+          </AlertDescription>
+        </Alert>
+      )}
       <CaseTabs
         history={
           <CaseHistory

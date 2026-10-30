@@ -1,5 +1,6 @@
 import {
   BookOpenIcon,
+  CircleHelpIcon,
   DatabaseIcon,
   FlagIcon,
   FileTextIcon,
@@ -63,6 +64,13 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         description: "Создание, переименование и отключение",
         href: "/admin/need-types",
         icon: BookOpenIcon,
+      },
+      {
+        title: "FAQ",
+        description: "Частые вопросы на сайте: тексты ru/be, порядок и публикация",
+        href: "/admin/faq",
+        icon: CircleHelpIcon,
+        privilege: "DICTIONARY_MANAGE",
       },
     ],
   },

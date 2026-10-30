@@ -22,7 +22,7 @@ export type AdminUser = {
   createdAt: string
 }
 
-export type CaseStatus = "DRAFT" | "PENDING_REVIEW" | "OPEN" | "REJECTED" | "CLOSED"
+export type CaseStatus = "DRAFT" | "PENDING_REVIEW" | "OPEN" | "REJECTED" | "CLOSED" | "HIDDEN"
 
 export type AnimalType = "CAT" | "DOG"
 
@@ -57,6 +57,7 @@ export type ModerationCaseDetails = ModerationCase & {
   closeReason: string | null
   closeComment: string | null
   rejectionReason: string | null
+  hideReason: string | null
   author: { id: string; displayName: string | null; avatarUrl: string | null }
   needs: {
     id: string
@@ -89,7 +90,12 @@ export type ComplaintStatus = "NEW" | "IN_PROGRESS" | "REJECTED" | "RESOLVED"
 
 export type ComplaintTargetType = "CASE" | "USER" | "CONVERSATION"
 
-export type ComplaintResolution = "WARNING_SENT" | "CASE_CLOSED" | "CASE_DELETED" | "CHAT_CLOSED"
+export type ComplaintResolution =
+  | "WARNING_SENT"
+  | "CASE_CLOSED"
+  | "CASE_DELETED"
+  | "CHAT_CLOSED"
+  | "CASE_HIDDEN"
 
 export type AdminComplaint = {
   id: string
@@ -195,6 +201,8 @@ export const AUDIT_ACTIONS = [
   "CASE_REJECTED",
   "CASE_CLOSED_BY_MODERATOR",
   "CASE_DELETED",
+  "CASE_HIDDEN",
+  "CASE_RESTORED",
   "HELP_APPLICATION_CREATED",
   "CONVERSATION_REQUESTED",
   "CONVERSATION_ACCEPTED",
@@ -207,6 +215,7 @@ export const AUDIT_ACTIONS = [
   "COMPLAINT_CASE_CLOSED",
   "COMPLAINT_TARGET_CLOSED",
   "COMPLAINT_TARGET_VIEWED",
+  "COMPLAINT_TARGET_HIDDEN",
   "USER_LOCALE_UPDATED",
   "USER_NOTIFICATION_PREFERENCE_UPDATE",
   "USER_UPLOAD_AVATAR",
@@ -299,6 +308,21 @@ export const ADMIN_JOBS = [
 ] as const
 
 export type AdminJob = (typeof ADMIN_JOBS)[number]
+
+export type FaqInput = {
+  questionRu: string
+  answerRu: string
+  questionBe: string
+  answerBe: string
+  sortOrder: number
+  published: boolean
+}
+
+export type Faq = FaqInput & {
+  id: string
+  createdAt: string
+  updatedAt: string
+}
 
 export type NeedType = {
   code: string
