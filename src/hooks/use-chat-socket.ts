@@ -35,7 +35,9 @@ export function useChatSocket({
     if (!enabled || !conversationId) return
     const { protocol, host } = window.location
     const stomp = new Client({
-      brokerURL: `${protocol === "https:" ? "wss:" : "ws:"}//${host}/ws`,
+      // Hosts that can't proxy WebSocket upgrades (Netlify, Vercel) need a direct backend URL instead.
+      brokerURL:
+        process.env.NEXT_PUBLIC_CHAT_WS_URL || `${protocol === "https:" ? "wss:" : "ws:"}//${host}/ws`,
       connectionTimeout: 20_000,
       heartbeatIncoming: 10_000,
       heartbeatOutgoing: 10_000,
