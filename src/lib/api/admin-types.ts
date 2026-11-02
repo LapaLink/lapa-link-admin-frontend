@@ -324,6 +324,35 @@ export type Faq = FaqInput & {
   updatedAt: string
 }
 
+export type SupportQuestionStatus = "NEW" | "IN_PROGRESS" | "CLOSED"
+
+export type SupportQuestion = {
+  id: string
+  userId: string
+  userEmail: string
+  userDisplayName: string | null
+  message: string
+  status: SupportQuestionStatus
+  conversationId: string | null
+  assignedTo: string | null
+  takenAt: string | null
+  closedBy: string | null
+  closedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type ChatMessage = {
+  id: string
+  conversationId: string
+  senderId: string
+  clientMessageId: string | null
+  text: string | null
+  createdAt: string
+  editedAt: string | null
+  deletedAt: string | null
+}
+
 export type NeedType = {
   code: string
   nameRu: string

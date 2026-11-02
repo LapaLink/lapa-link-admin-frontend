@@ -6,6 +6,7 @@ import {
   FileTextIcon,
   LayoutDashboardIcon,
   MailIcon,
+  MessagesSquareIcon,
   ShieldCheckIcon,
   TimerResetIcon,
   UsersIcon,
@@ -47,6 +48,13 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         href: "/admin/complaints",
         icon: FlagIcon,
         privilege: "CONTENT_MODERATE",
+      },
+      {
+        title: "Вопросы пользователей",
+        description: "Вопросы администратору: взять в работу, ответить в чате, закрыть",
+        href: "/admin/support",
+        icon: MessagesSquareIcon,
+        privilege: "SUPPORT_MANAGE",
       },
       {
         title: "Объявления",

@@ -7,6 +7,8 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Toaster } from "@/components/ui/toast"
+import { adminGet } from "@/lib/admin/api"
+import type { Page, SupportQuestion } from "@/lib/api/admin-types"
 import { getCurrentUser } from "@/lib/auth/current-user"
 import { getPrivileges } from "@/lib/auth/privileges"
 
@@ -47,8 +49,14 @@ async function CurrentNavUser() {
 }
 
 async function CurrentNavigation() {
-  const user = await getCurrentUser()
-  return <AdminNavigation privileges={getPrivileges(user)} />
+  const privileges = getPrivileges(await getCurrentUser())
+  const newQuestions = privileges.includes("SUPPORT_MANAGE")
+    ? await adminGet<Page<SupportQuestion>>("/admin/support-questions", { status: "NEW", size: "1" })
+    : undefined
+  const badges: Record<string, number> = newQuestions?.ok && newQuestions.data.totalElements > 0
+    ? { "/admin/support": newQuestions.data.totalElements }
+    : {}
+  return <AdminNavigation privileges={privileges} badges={badges} />
 }
 
 async function CurrentCommandMenu() {

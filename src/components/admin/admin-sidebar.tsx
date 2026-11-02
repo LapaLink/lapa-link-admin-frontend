@@ -14,6 +14,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -50,19 +51,29 @@ export function AdminSidebar({ navigation, footer }: { navigation: React.ReactNo
   )
 }
 
-export function AdminNavigation({ privileges }: { privileges: Privilege[] }) {
+type Badges = Record<string, number>
+
+export function AdminNavigation({ privileges, badges = {} }: { privileges: Privilege[]; badges?: Badges }) {
   return (
-    <Suspense fallback={<Navigation privileges={privileges} pathname={null} />}>
-      <ActiveNavigation privileges={privileges} />
+    <Suspense fallback={<Navigation privileges={privileges} badges={badges} pathname={null} />}>
+      <ActiveNavigation privileges={privileges} badges={badges} />
     </Suspense>
   )
 }
 
-function ActiveNavigation({ privileges }: { privileges: Privilege[] }) {
-  return <Navigation privileges={privileges} pathname={usePathname()} />
+function ActiveNavigation({ privileges, badges }: { privileges: Privilege[]; badges: Badges }) {
+  return <Navigation privileges={privileges} badges={badges} pathname={usePathname()} />
 }
 
-function Navigation({ privileges, pathname }: { privileges: Privilege[]; pathname: string | null }) {
+function Navigation({
+  privileges,
+  badges,
+  pathname,
+}: {
+  privileges: Privilege[]
+  badges: Badges
+  pathname: string | null
+}) {
   return getNavigation(privileges).map((group, index) => (
     <SidebarGroup key={index}>
       {group.title && <SidebarGroupLabel>{group.title}</SidebarGroupLabel>}
@@ -78,6 +89,7 @@ function Navigation({ privileges, pathname }: { privileges: Privilege[]; pathnam
                 <item.icon />
                 <span>{item.title}</span>
               </SidebarMenuButton>
+              {badges[item.href] && <SidebarMenuBadge>{badges[item.href]}</SidebarMenuBadge>}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

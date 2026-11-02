@@ -161,6 +161,12 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   USER_FORGOT_PASSWORD: "Запрос восстановления пароля",
 }
 
+export const SUPPORT_QUESTION_STATUS_LABELS: Record<string, string> = {
+  NEW: "Новый",
+  IN_PROGRESS: "В работе",
+  CLOSED: "Закрыт",
+}
+
 export const COMPLAINT_STATUS_LABELS: Record<ComplaintStatus, string> = {
   NEW: "Новая",
   IN_PROGRESS: "В работе",

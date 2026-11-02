@@ -1,12 +1,16 @@
 "use server"
 
+import { cookies } from "next/headers"
+
 import { adminGet, adminSend } from "@/lib/admin/api"
+import { ACCESS_COOKIE } from "@/lib/auth/session"
 import type {
   AdminCase,
   AdminComplaint,
   AdminJob,
   AdminUser,
   CacheEntry,
+  ChatMessage,
   CacheType,
   Faq,
   FaqInput,
@@ -14,6 +18,7 @@ import type {
   NotificationTemplate,
   NotificationTemplateContent,
   StatusHistoryItem,
+  SupportQuestion,
 } from "@/lib/api/admin-types"
 
 export type NeedTypeInput = {
@@ -118,6 +123,29 @@ export async function updateFaq(id: string, input: FaqInput) {
 
 export async function deleteFaq(id: string) {
   return adminSend("DELETE", `/admin/faq/${encodeURIComponent(id)}`)
+}
+
+export async function getSupportQuestion(questionId: string) {
+  return adminGet<SupportQuestion>(`/admin/support-questions/${encodeURIComponent(questionId)}`)
+}
+
+export async function takeSupportQuestion(questionId: string) {
+  return adminSend<SupportQuestion>("POST", `/admin/support-questions/${encodeURIComponent(questionId)}/take`)
+}
+
+export async function closeSupportQuestion(questionId: string) {
+  return adminSend<SupportQuestion>("POST", `/admin/support-questions/${encodeURIComponent(questionId)}/close`)
+}
+
+export async function getChatMessages(conversationId: string) {
+  return adminGet<ChatMessage[]>(`/chat/conversations/${encodeURIComponent(conversationId)}/messages`, {
+    size: "100",
+  })
+}
+
+/** Access token for the chat STOMP connection: the browser can't read the httpOnly session cookie itself. */
+export async function getChatToken() {
+  return (await cookies()).get(ACCESS_COOKIE)?.value ?? null
 }
 
 export async function grantModerator(userId: string) {

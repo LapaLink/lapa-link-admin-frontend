@@ -5,6 +5,7 @@ export type Privilege =
   | "CONTENT_MODERATE"
   | "DICTIONARY_MANAGE"
   | "SETTINGS_MANAGE"
+  | "SUPPORT_MANAGE"
   | "USER_READ"
 
 // /account/me returns only roles; this mirrors the backend role → privilege mapping (V025__privileges.sql).
@@ -12,7 +13,7 @@ export type Privilege =
 const ROLE_PRIVILEGES: Record<RoleCode, Privilege[]> = {
   USER: [],
   MODERATOR: ["CONTENT_MODERATE"],
-  ADMIN: ["AUDIT_LOG_READ", "CONTENT_MODERATE", "DICTIONARY_MANAGE", "SETTINGS_MANAGE", "USER_READ"],
+  ADMIN: ["AUDIT_LOG_READ", "CONTENT_MODERATE", "DICTIONARY_MANAGE", "SETTINGS_MANAGE", "SUPPORT_MANAGE", "USER_READ"],
 }
 
 export function getPrivileges(user: CurrentUser): Privilege[] {
