@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
 import { resetUserLimit } from "@/lib/admin/actions"
-import { LIMIT_TYPE_LABELS } from "@/lib/admin/labels"
 import type { LimitBanType, LimitType } from "@/lib/api/admin-types"
 
 const REFRESH_ERRORS = ["USER_NOT_FOUND", "OPERATION_LIMIT_NOT_FOUND"]
@@ -62,7 +61,7 @@ export function LimitResetButton({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Сбросить лимит «{LIMIT_TYPE_LABELS[limitType] ?? limitType}»?</AlertDialogTitle>
+          <AlertDialogTitle>Сбросить лимит «{limitType}»?</AlertDialogTitle>
           <AlertDialogDescription>
             Счётчик обнулится, бан по этому лимиту снимется.
             {accountBan && " Статус пользователя вернётся в «Активен»."}

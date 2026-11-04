@@ -7,7 +7,6 @@ import type {
   ComplaintTargetType,
   HelpApplicationStatus,
   LimitBanType,
-  LimitType,
   NeedStatus,
   StatusHistoryTargetType,
 } from "@/lib/api/admin-types"
@@ -171,22 +170,6 @@ export const AUDIT_ERROR_LABELS: Record<string, string> = {
   OPERATION_LIMIT_EXCEEDED: "Превышен лимит операций",
   OPERATION_BLOCKED: "Операция временно недоступна (бан по лимиту)",
 }
-
-export const LIMIT_TYPE_LABELS: Record<LimitType, string> = {
-  CASE_NEW_REQUEST: "Создание объявления",
-  SUPPORT_QUESTION_NEW_REQUEST: "Вопрос в поддержку",
-  COMPLAINT_NEW_REQUEST: "Жалоба",
-  HELP_APPLICATION_NEW_REQUEST: "Заявка на помощь",
-  ADOPTION_REQUEST_NEW_REQUEST: "Заявка на постоянный дом",
-  CONVERSATION_NEW_REQUEST: "Запрос на чат",
-  USER_EMAIL_CHANGE_REQUEST: "Смена почты",
-  USER_AVATAR_UPLOAD: "Загрузка аватара",
-  SUPPORT_QUESTION_NEW_MESSAGE: "Сообщение в вопросе поддержки",
-  USER_FORGOT_PASSWORD_REQUEST: "Восстановление пароля",
-}
-
-// The backend lists these types but doesn't enforce them yet.
-export const LIMIT_TYPES_NOT_ENFORCED: string[] = ["SUPPORT_QUESTION_NEW_MESSAGE", "USER_FORGOT_PASSWORD_REQUEST"]
 
 export const LIMIT_BAN_TYPE_LABELS: Record<LimitBanType, string> = {
   ACTION: "Бан операции",

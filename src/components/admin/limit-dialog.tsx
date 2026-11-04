@@ -28,13 +28,9 @@ import { describeLimit } from "@/lib/admin/limits"
 import {
   AUDIT_ACTION_LABELS,
   LIMIT_BAN_TYPE_LABELS,
-  LIMIT_TYPE_LABELS,
-  LIMIT_TYPES_NOT_ENFORCED,
   TIME_UNIT_LABELS,
 } from "@/lib/admin/labels"
 import {
-  AUDIT_ACTIONS,
-  LIMIT_TYPES,
   TIME_UNITS,
   type LimitBanType,
   type LimitType,
@@ -56,9 +52,9 @@ type Form = {
   banDuration: string
 }
 
-function initialForm(limit: OperationLimit | undefined, existing: LimitType[]): Form {
+function initialForm(limit: OperationLimit | undefined): Form {
   return {
-    limitType: limit?.limitType ?? LIMIT_TYPES.find((type) => !existing.includes(type)) ?? "",
+    limitType: limit?.limitType ?? "",
     enabled: limit?.enabled ?? true,
     description: limit?.description ?? "",
     maxCount: String(limit?.maxCount ?? 5),
@@ -70,21 +66,32 @@ function initialForm(limit: OperationLimit | undefined, existing: LimitType[]): 
   }
 }
 
-/** Create (`limit` omitted) or edit an operation limit rule. `existing` are the types that already have one. */
-export function LimitDialog({ limit, existing }: { limit?: OperationLimit; existing: LimitType[] }) {
+/**
+ * Create (`limit` omitted) or edit a rule. A rule is bound to one audit action; actions already used by
+ * other rules (`limits`) can't be picked again.
+ */
+export function LimitDialog({
+  limit,
+  limits,
+  auditActions,
+}: {
+  limit?: OperationLimit
+  limits: OperationLimit[]
+  auditActions: string[]
+}) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<ApiError>()
-  const [form, setForm] = useState(() => initialForm(limit, existing))
+  const [form, setForm] = useState(() => initialForm(limit))
   const [pending, startTransition] = useTransition()
   const permanent = form.limitBanType === "PERMANENT"
-  const allTaken = !limit && LIMIT_TYPES.every((type) => existing.includes(type))
+  const taken = new Set(limits.filter((item) => item.limitType !== limit?.limitType).map((item) => item.auditAction))
 
   function handleOpenChange(next: boolean) {
     setOpen(next)
     if (next) {
       setError(undefined)
-      setForm(initialForm(limit, existing))
+      setForm(initialForm(limit))
     }
   }
 
@@ -98,7 +105,7 @@ export function LimitDialog({ limit, existing }: { limit?: OperationLimit; exist
       maxCount: Number(form.maxCount),
       windowSize: Number(form.windowSize),
       timeUnit: form.timeUnit as TimeUnit,
-      auditAction: (form.auditAction || undefined) as OperationLimitInput["auditAction"],
+      auditAction: form.auditAction,
       limitBanType: form.limitBanType as LimitBanType,
       banDuration: permanent ? undefined : Number(form.banDuration),
     }
@@ -114,7 +121,9 @@ export function LimitDialog({ limit, existing }: { limit?: OperationLimit; exist
           router.refresh()
           return
         }
-        if (result.error.code === "OPERATION_LIMIT_ALREADY_EXISTS") router.refresh()
+        if (result.error.code === "OPERATION_LIMIT_ALREADY_EXISTS" || result.error.code === "OPERATION_LIMIT_ACTION_TAKEN") {
+          router.refresh()
+        }
         setError(result.error)
         return
       }
@@ -135,7 +144,7 @@ export function LimitDialog({ limit, existing }: { limit?: OperationLimit; exist
           Изменить
         </DialogTrigger>
       ) : (
-        <DialogTrigger render={<Button disabled={allTaken} />}>
+        <DialogTrigger render={<Button />}>
           <PlusIcon data-icon="inline-start" />
           Добавить правило
         </DialogTrigger>
@@ -147,7 +156,7 @@ export function LimitDialog({ limit, existing }: { limit?: OperationLimit; exist
             <DialogDescription>
               {limit
                 ? "Накопленные счётчики пользователей не сбрасываются."
-                : "Для каждого типа операции может быть только одно правило."}
+                : "Правило привязывается к действию аудита: у одного действия может быть только одно правило."}
             </DialogDescription>
           </DialogHeader>
           <FieldGroup>
@@ -158,24 +167,47 @@ export function LimitDialog({ limit, existing }: { limit?: OperationLimit; exist
               </Alert>
             )}
             <Field data-invalid={Boolean(fieldError("limitType"))}>
-              <FieldLabel htmlFor="limitType">Операция</FieldLabel>
-              <NativeSelect
+              <FieldLabel htmlFor="limitType">Код правила</FieldLabel>
+              <Input
                 id="limitType"
+                required
+                minLength={2}
+                maxLength={64}
+                pattern="[A-Z][A-Z0-9_]{1,63}"
+                placeholder="CASE_NEW_REQUEST"
+                className="font-mono"
+                readOnly={Boolean(limit)}
                 value={form.limitType}
-                disabled={Boolean(limit)}
                 onChange={(event) => set({ limitType: event.target.value })}
+                aria-invalid={Boolean(fieldError("limitType"))}
+              />
+              <FieldDescription>
+                Заглавные латинские буквы, цифры и _, начинается с буквы, 2–64 символа. После создания не меняется
+              </FieldDescription>
+              <FieldError>{fieldError("limitType")}</FieldError>
+            </Field>
+            <Field data-invalid={Boolean(fieldError("auditAction"))}>
+              <FieldLabel htmlFor="auditAction">Действие аудита</FieldLabel>
+              <NativeSelect
+                id="auditAction"
+                required
+                value={form.auditAction}
+                onChange={(event) => set({ auditAction: event.target.value })}
               >
-                {LIMIT_TYPES.map((type) => (
-                  <NativeSelectOption key={type} value={type} disabled={!limit && existing.includes(type)}>
-                    {LIMIT_TYPE_LABELS[type]}
-                    {existing.includes(type) && !limit ? " (правило есть)" : ""}
+                <NativeSelectOption value="">Выберите действие</NativeSelectOption>
+                {auditActions.map((action) => (
+                  <NativeSelectOption key={action} value={action} disabled={taken.has(action)}>
+                    {(AUDIT_ACTION_LABELS as Record<string, string>)[action] ?? action}
+                    {taken.has(action) ? " (занято)" : ""}
                   </NativeSelectOption>
                 ))}
               </NativeSelect>
-              {LIMIT_TYPES_NOT_ENFORCED.includes(form.limitType) && (
-                <FieldDescription>Пока не действует: бэкенд не применяет этот лимит к пользователям</FieldDescription>
-              )}
-              <FieldError>{fieldError("limitType")}</FieldError>
+              <FieldDescription>
+                Лимит действует на пользователей, которые выполняют операцию с этим действием, например CASE_CREATED —
+                создание объявления. Действия сотрудников (модераторов, админов) и запросы без авторизации лимит не
+                затрагивает
+              </FieldDescription>
+              <FieldError>{fieldError("auditAction")}</FieldError>
             </Field>
             <Field orientation="horizontal">
               <FieldContent>
@@ -257,23 +289,6 @@ export function LimitDialog({ limit, existing }: { limit?: OperationLimit; exist
                 <FieldError>{fieldError("banDuration")}</FieldError>
               </Field>
             )}
-            <Field data-invalid={Boolean(fieldError("auditAction"))}>
-              <FieldLabel htmlFor="auditAction">Действие аудита</FieldLabel>
-              <NativeSelect
-                id="auditAction"
-                value={form.auditAction}
-                onChange={(event) => set({ auditAction: event.target.value })}
-              >
-                <NativeSelectOption value="">Не указано</NativeSelectOption>
-                {AUDIT_ACTIONS.map((action) => (
-                  <NativeSelectOption key={action} value={action}>
-                    {AUDIT_ACTION_LABELS[action] ?? action}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-              <FieldDescription>Справочное поле</FieldDescription>
-              <FieldError>{fieldError("auditAction")}</FieldError>
-            </Field>
             <Field data-invalid={Boolean(fieldError("description"))}>
               <FieldLabel htmlFor="description">Описание</FieldLabel>
               <Textarea
@@ -291,7 +306,7 @@ export function LimitDialog({ limit, existing }: { limit?: OperationLimit; exist
           </FieldGroup>
           <DialogFooter>
             <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
-            <Button type="submit" disabled={pending || !form.limitType}>
+            <Button type="submit" disabled={pending || !form.limitType || !form.auditAction}>
               {pending && <Spinner data-icon="inline-start" />}
               Сохранить
             </Button>

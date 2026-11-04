@@ -15,7 +15,6 @@ import {
   AUDIT_ACTION_LABELS,
   AUDIT_ERROR_LABELS,
   LIMIT_BAN_TYPE_LABELS,
-  LIMIT_TYPE_LABELS,
 } from "@/lib/admin/labels"
 import type { AuditLogEntry } from "@/lib/api/admin-types"
 
@@ -29,7 +28,7 @@ export function EventDetails({ event }: { event: AuditLogEntry }) {
     ["Инициатор", [event.actorType, event.actorRole, event.actorId].filter(Boolean).join(" · ")],
     ["Объект", [event.targetType, event.targetId].filter(Boolean).join(" · ") || null],
     ["Код ошибки", event.errorCode ? (AUDIT_ERROR_LABELS[event.errorCode] ? `${AUDIT_ERROR_LABELS[event.errorCode]} (${event.errorCode})` : event.errorCode) : null],
-    ["Лимит", label(LIMIT_TYPE_LABELS, event.metadata?.limitType)],
+    ["Лимит", typeof event.metadata?.limitType === "string" ? event.metadata.limitType : null],
     ["Бан при превышении", label(LIMIT_BAN_TYPE_LABELS, event.metadata?.limitBanType)],
     ["Причина", event.reason],
     ["Запрос", event.requestId],

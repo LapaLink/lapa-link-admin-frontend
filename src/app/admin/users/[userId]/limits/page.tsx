@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { adminGet } from "@/lib/admin/api"
 import { formatDateTime } from "@/lib/admin/format"
-import { LIMIT_BAN_TYPE_LABELS, LIMIT_TYPE_LABELS } from "@/lib/admin/labels"
+import { LIMIT_BAN_TYPE_LABELS } from "@/lib/admin/labels"
 import { formatInterval } from "@/lib/admin/limits"
 import type { UserOperationLimit } from "@/lib/api/admin-types"
 
@@ -39,7 +39,7 @@ async function UserLimits({ params }: { params: Promise<{ userId: string }> }) {
       {suspension && (
         <Alert>
           <CircleAlertIcon />
-          <AlertTitle>Аккаунт приостановлен по лимиту «{LIMIT_TYPE_LABELS[suspension.limitType] ?? suspension.limitType}»</AlertTitle>
+          <AlertTitle>Аккаунт приостановлен по лимиту «{suspension.description ?? suspension.limitType}»</AlertTitle>
           <AlertDescription>
             Блокировка снимется автоматически
             {suspension.blockedUntil ? ` после ${formatDateTime(suspension.blockedUntil)}` : ""}, с задержкой до минуты.
@@ -50,7 +50,7 @@ async function UserLimits({ params }: { params: Promise<{ userId: string }> }) {
       {permanent && (
         <Alert variant="destructive">
           <CircleAlertIcon />
-          <AlertTitle>Бессрочный бан по лимиту «{LIMIT_TYPE_LABELS[permanent.limitType] ?? permanent.limitType}»</AlertTitle>
+          <AlertTitle>Бессрочный бан по лимиту «{permanent.description ?? permanent.limitType}»</AlertTitle>
           <AlertDescription>Снять его можно кнопкой «Сбросить» в строке этого лимита или «Разблокировать» в списке пользователей.</AlertDescription>
         </Alert>
       )}
@@ -68,9 +68,10 @@ async function UserLimits({ params }: { params: Promise<{ userId: string }> }) {
           {result.data.map((item) => (
             <TableRow key={item.limitType} className={item.enabled ? undefined : "opacity-60"}>
               <TableCell>
-                {LIMIT_TYPE_LABELS[item.limitType] ?? item.limitType}
+                {item.description ?? item.limitType}
                 {!item.enabled && <Badge variant="outline" className="ml-2">Выключено</Badge>}
                 <div className="text-xs text-muted-foreground">
+                  <span className="font-mono">{item.limitType}</span> ·{" "}
                   {LIMIT_BAN_TYPE_LABELS[item.limitBanType] ?? item.limitBanType}
                 </div>
               </TableCell>

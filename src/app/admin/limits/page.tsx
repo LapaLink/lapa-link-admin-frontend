@@ -11,8 +11,8 @@ import { Badge } from "@/components/ui/badge"
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { adminGet } from "@/lib/admin/api"
 import { describeLimit } from "@/lib/admin/limits"
-import { LIMIT_BAN_TYPE_LABELS, LIMIT_TYPES_NOT_ENFORCED, LIMIT_TYPE_LABELS } from "@/lib/admin/labels"
-import type { OperationLimit } from "@/lib/api/admin-types"
+import { AUDIT_ACTION_LABELS, LIMIT_BAN_TYPE_LABELS } from "@/lib/admin/labels"
+import { AUDIT_ACTIONS, type OperationLimit } from "@/lib/api/admin-types"
 
 export const metadata: Metadata = { title: "Лимиты" }
 
@@ -25,8 +25,12 @@ export default function LimitsPage() {
 }
 
 async function LimitsTable() {
-  const result = await adminGet<OperationLimit[]>("/admin/limits")
-  const existing = result.ok ? result.data.map((limit) => limit.limitType) : []
+  const [result, dictionary] = await Promise.all([
+    adminGet<OperationLimit[]>("/admin/limits"),
+    adminGet<{ auditActions?: string[] }>("/dictionary"),
+  ])
+  const limits = result.ok ? result.data : []
+  const auditActions = dictionary.ok && dictionary.data.auditActions ? dictionary.data.auditActions : [...AUDIT_ACTIONS]
 
   return (
     <>
@@ -34,7 +38,7 @@ async function LimitsTable() {
         title="Лимиты"
         description="Сколько раз пользователь может выполнить операцию за окно времени и что будет при превышении"
       >
-        <LimitDialog existing={existing} />
+        <LimitDialog limits={limits} auditActions={auditActions} />
       </PageHeader>
       {!result.ok ? (
         <ApiErrorAlert error={result.error} />
@@ -55,21 +59,20 @@ async function LimitsTable() {
               <TableRow key={limit.limitType} className={limit.enabled ? undefined : "opacity-60"}>
                 <TableCell>
                   <div className="flex flex-wrap items-center gap-2">
-                    {LIMIT_TYPE_LABELS[limit.limitType] ?? limit.limitType}
+                    <span className="font-mono text-xs">{limit.limitType}</span>
                     {!limit.enabled && <Badge variant="outline">Выключено</Badge>}
-                    {LIMIT_TYPES_NOT_ENFORCED.includes(limit.limitType) && (
-                      <Badge variant="outline">пока не действует</Badge>
-                    )}
                   </div>
-                  <div className="font-mono text-xs text-muted-foreground">{limit.limitType}</div>
                   {limit.description && (
                     <div className="max-w-72 whitespace-pre-line text-xs text-muted-foreground">{limit.description}</div>
                   )}
+                  <div className="text-xs text-muted-foreground">
+                    {(AUDIT_ACTION_LABELS as Record<string, string>)[limit.auditAction] ?? limit.auditAction}
+                  </div>
                 </TableCell>
                 <TableCell className="max-w-96 whitespace-normal">{describeLimit(limit)}</TableCell>
                 <TableCell>{LIMIT_BAN_TYPE_LABELS[limit.limitBanType] ?? limit.limitBanType}</TableCell>
                 <TableCell className="text-right">
-                  <LimitRowActions limit={limit} existing={existing} />
+                  <LimitRowActions limit={limit} limits={limits} auditActions={auditActions} />
                 </TableCell>
               </TableRow>
             ))}

@@ -21,12 +21,19 @@ import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "@/components/ui/toast"
 import { deleteLimit, updateLimit } from "@/lib/admin/actions"
-import { LIMIT_TYPE_LABELS } from "@/lib/admin/labels"
-import type { LimitType, OperationLimit } from "@/lib/api/admin-types"
+import type { OperationLimit } from "@/lib/api/admin-types"
 import type { ApiError } from "@/lib/api/types"
 
 /** Enable switch, editing and deletion of one limit rule. */
-export function LimitRowActions({ limit, existing }: { limit: OperationLimit; existing: LimitType[] }) {
+export function LimitRowActions({
+  limit,
+  limits,
+  auditActions,
+}: {
+  limit: OperationLimit
+  limits: OperationLimit[]
+  auditActions: string[]
+}) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
 
@@ -72,7 +79,7 @@ export function LimitRowActions({ limit, existing }: { limit: OperationLimit; ex
   return (
     <div className="flex items-center justify-end gap-2">
       <Switch checked={limit.enabled} onCheckedChange={toggle} disabled={pending} aria-label="Включено" />
-      <LimitDialog limit={limit} existing={existing} />
+      <LimitDialog limit={limit} limits={limits} auditActions={auditActions} />
       <AlertDialog>
         <AlertDialogTrigger render={<Button variant="ghost" size="sm" disabled={pending} />}>
           {pending ? <Spinner data-icon="inline-start" /> : <Trash2Icon data-icon="inline-start" />}
@@ -80,7 +87,7 @@ export function LimitRowActions({ limit, existing }: { limit: OperationLimit; ex
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Удалить правило «{LIMIT_TYPE_LABELS[limit.limitType] ?? limit.limitType}»?</AlertDialogTitle>
+            <AlertDialogTitle>Удалить правило «{limit.limitType}»?</AlertDialogTitle>
             <AlertDialogDescription>
               Вместе с правилом удалятся счётчики и баны всех пользователей по этому лимиту. Чтобы лишь временно
               отключить его, выключите правило переключателем.

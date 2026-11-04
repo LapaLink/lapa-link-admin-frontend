@@ -357,20 +357,8 @@ export type ChatMessage = {
   deletedAt: string | null
 }
 
-export const LIMIT_TYPES = [
-  "CASE_NEW_REQUEST",
-  "SUPPORT_QUESTION_NEW_REQUEST",
-  "COMPLAINT_NEW_REQUEST",
-  "HELP_APPLICATION_NEW_REQUEST",
-  "ADOPTION_REQUEST_NEW_REQUEST",
-  "CONVERSATION_NEW_REQUEST",
-  "USER_EMAIL_CHANGE_REQUEST",
-  "USER_AVATAR_UPLOAD",
-  "SUPPORT_QUESTION_NEW_MESSAGE",
-  "USER_FORGOT_PASSWORD_REQUEST",
-] as const
-
-export type LimitType = (typeof LIMIT_TYPES)[number]
+// Free-form code (^[A-Z][A-Z0-9_]{1,63}$), created by the admin.
+export type LimitType = string
 
 export type LimitBanType = "ACTION" | "ACCOUNT" | "PERMANENT"
 
@@ -385,7 +373,7 @@ export type OperationLimitInput = {
   maxCount: number
   windowSize: number
   timeUnit: TimeUnit
-  auditAction?: AuditAction | null
+  auditAction: string
   limitBanType: LimitBanType
   banDuration?: number | null
 }

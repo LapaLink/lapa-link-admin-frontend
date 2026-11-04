@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 
 import { ApiErrorAlert } from "@/components/admin/api-error-alert"
@@ -51,11 +51,13 @@ export function CaseHistory({
   // Keeps the Strict Mode double effect from requesting the history twice.
   const requested = useRef(false)
 
+  const load = useCallback(() => getCaseHistory(caseId).then(setResult), [caseId])
+
   useEffect(() => {
     if (requested.current) return
     requested.current = true
-    getCaseHistory(caseId).then(setResult)
-  }, [caseId])
+    void load()
+  }, [load])
 
   if (!result) return <Skeleton className="h-64" />
   if (!result.ok) {
@@ -85,7 +87,7 @@ export function CaseHistory({
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
-      <DataTable>
+      <DataTable onRefresh={load}>
         <TableHeader>
           <TableRow>
             <TableHead>Время</TableHead>
