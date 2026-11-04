@@ -104,7 +104,7 @@ async function SupportQuestions({ searchParams }: { searchParams: Promise<Search
                     </Badge>
                   </TableCell>
                   <TableCell className="font-mono text-xs">
-                    {item.assignedTo === null ? "—" : item.assignedTo === user.id ? "вы" : item.assignedTo}
+                    {item.assignedTo == null ? "—" : item.assignedTo === user.id ? "вы" : item.assignedTo}
                   </TableCell>
                 </TableRow>
               ))}

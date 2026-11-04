@@ -88,7 +88,7 @@ export function CacheEntrySheet({ type, cacheKey }: Props) {
             <>
               <p className="text-sm text-muted-foreground">
                 Время жизни:{" "}
-                {entry.ttlSeconds === null ? "без срока" : `${entry.ttlSeconds} с`}
+                {entry.ttlSeconds == null ? "без срока" : `${entry.ttlSeconds} с`}
               </p>
               {entry.masked ? (
                 <Alert>

@@ -3,6 +3,7 @@ import {
   CircleHelpIcon,
   DatabaseIcon,
   FlagIcon,
+  GaugeIcon,
   FileTextIcon,
   LayoutDashboardIcon,
   MailIcon,
@@ -91,6 +92,13 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         description: "Просмотр email и in-app шаблонов",
         href: "/admin/notification-templates",
         icon: MailIcon,
+        privilege: "SETTINGS_MANAGE",
+      },
+      {
+        title: "Лимиты",
+        description: "Лимиты операций пользователей и баны при превышении",
+        href: "/admin/limits",
+        icon: GaugeIcon,
         privilege: "SETTINGS_MANAGE",
       },
       {

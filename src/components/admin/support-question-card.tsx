@@ -49,7 +49,7 @@ export function SupportQuestionCard({
   const [pending, startTransition] = useTransition()
   const [messages, setMessages] = useState<ApiResult<ChatMessage[]>>()
   const takenByOther = question.status === "IN_PROGRESS" && question.assignedTo !== currentUserId
-  const participant = question.status !== "NEW" && question.conversationId !== null
+  const participant = question.status !== "NEW" && question.conversationId != null
 
   const loadMessages = useCallback(() => {
     if (!question.conversationId) return
@@ -60,7 +60,7 @@ export function SupportQuestionCard({
     if (participant) loadMessages()
   }, [participant, loadMessages])
 
-  const writable = question.status === "IN_PROGRESS" && question.conversationId !== null
+  const writable = question.status === "IN_PROGRESS" && question.conversationId != null
   const [draft, setDraft] = useState("")
   const chat = useChatSocket({
     conversationId: question.conversationId,
@@ -186,7 +186,7 @@ export function SupportQuestionCard({
           <CardContent className="flex flex-col gap-3">
             {!participant ? (
               <p className="text-sm text-muted-foreground">
-                {question.conversationId === null && question.status === "CLOSED"
+                {question.conversationId == null && question.status === "CLOSED"
                   ? "Чат удалён (закрытые чаты хранятся 14 дней)"
                   : "История чата будет доступна после «Взять в работу»"}
               </p>
@@ -239,7 +239,7 @@ function ChatHistory({ messages, authorId }: { messages: ChatMessage[]; authorId
     <ol className="flex max-h-[36rem] flex-col gap-3 overflow-y-auto rounded-lg border p-3">
       {sorted.map((message) => {
         const fromUser = message.senderId === authorId
-        const removed = message.text === null || message.deletedAt !== null
+        const removed = message.text == null || message.deletedAt != null
         return (
           <li
             key={message.id}

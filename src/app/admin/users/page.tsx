@@ -138,8 +138,11 @@ async function UsersContent({ searchParams }: { searchParams: Promise<SearchPara
                   <TableCell>{formatDateTime(user.createdAt)}</TableCell>
                   <TableCell>{formatDateTime(user.lastLoginAt)}</TableCell>
                   <TableCell>
-                    <div className="flex justify-end gap-1">
+                    <div className="flex items-center justify-end gap-1">
                       <ModeratorRoleButton user={user} />
+                      {user.status === "SUSPENDED" && (
+                        <span className="text-xs text-muted-foreground">Блокировка снимется автоматически</span>
+                      )}
                       {user.roles.every((role) => role === "USER") &&
                         (user.status === "ACTIVE" || user.status === "BLOCKED") && (
                           <UserBlockButton

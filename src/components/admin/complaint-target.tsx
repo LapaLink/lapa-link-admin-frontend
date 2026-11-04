@@ -150,14 +150,14 @@ function ConversationTargetView({
   reporterId: string
   reviewed: boolean
 }) {
-  const deleted = target.chatTitle === null && target.participantIds.length === 0
+  const deleted = target.chatTitle == null && target.participantIds.length === 0
 
   return (
     <Card>
       <CardHeader>
         <CardDescription>Чат</CardDescription>
         <CardTitle>
-          {target.chatTitle !== null ? `Чат по объявлению «${target.chatTitle}»` : "Чат"}
+          {target.chatTitle != null ? `Чат по объявлению «${target.chatTitle}»` : "Чат"}
         </CardTitle>
         <div className="flex flex-col gap-2 text-sm">
           {deleted && (
@@ -199,7 +199,7 @@ function ConversationTargetView({
           <ol className="flex max-h-[36rem] flex-col gap-3 overflow-y-auto rounded-lg border p-3">
             {target.messages.map((message) => {
               const fromReporter = message.senderId === reporterId
-              const removed = message.text === null
+              const removed = message.text == null
               return (
                 <li
                   key={message.messageId}

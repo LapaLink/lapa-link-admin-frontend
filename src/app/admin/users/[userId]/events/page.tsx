@@ -26,7 +26,7 @@ import {
   pickParams,
   type SearchParams,
 } from "@/lib/admin/format"
-import { AUDIT_ACTION_LABELS, ROLE_LABELS } from "@/lib/admin/labels"
+import { AUDIT_ACTION_LABELS, AUDIT_ERROR_LABELS, ROLE_LABELS } from "@/lib/admin/labels"
 import { AUDIT_ACTIONS, type AuditLogEntry, type Page } from "@/lib/api/admin-types"
 
 export const metadata: Metadata = { title: "События пользователя" }
@@ -118,7 +118,9 @@ async function UserEvents({
                     {event.outcome === "SUCCESS" ? (
                       <Badge variant="secondary">Успех</Badge>
                     ) : (
-                      <Badge variant="destructive">{event.errorCode ?? "Ошибка"}</Badge>
+                      <Badge variant="destructive">
+                        {event.errorCode ? (AUDIT_ERROR_LABELS[event.errorCode] ?? event.errorCode) : "Ошибка"}
+                      </Badge>
                     )}
                   </TableCell>
                   <TableCell>

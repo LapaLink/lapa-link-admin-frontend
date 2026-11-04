@@ -14,6 +14,9 @@ import type {
   CacheType,
   Faq,
   FaqInput,
+  LimitType,
+  OperationLimit,
+  OperationLimitInput,
   NeedType,
   NotificationTemplate,
   NotificationTemplateContent,
@@ -146,6 +149,18 @@ export async function getChatMessages(conversationId: string) {
 /** Access token for the chat STOMP connection: the browser can't read the httpOnly session cookie itself. */
 export async function getChatToken() {
   return (await cookies()).get(ACCESS_COOKIE)?.value ?? null
+}
+
+export async function createLimit(input: OperationLimitInput & { limitType: LimitType }) {
+  return adminSend<OperationLimit>("POST", "/admin/limits", input)
+}
+
+export async function updateLimit(limitType: LimitType, input: OperationLimitInput) {
+  return adminSend<OperationLimit>("PUT", `/admin/limits/${encodeURIComponent(limitType)}`, input)
+}
+
+export async function deleteLimit(limitType: LimitType) {
+  return adminSend("DELETE", `/admin/limits/${encodeURIComponent(limitType)}`)
 }
 
 export async function grantModerator(userId: string) {

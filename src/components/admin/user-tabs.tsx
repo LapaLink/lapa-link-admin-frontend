@@ -10,6 +10,7 @@ const TABS: { value: string; label: string; privilege?: Privilege }[] = [
   { value: "cases", label: "Объявления" },
   { value: "responses", label: "Отклики" },
   { value: "events", label: "События", privilege: "AUDIT_LOG_READ" },
+  { value: "limits", label: "Лимиты", privilege: "SETTINGS_MANAGE" },
 ]
 
 export function UserTabs({ userId, privileges }: { userId: string; privileges: Privilege[] }) {

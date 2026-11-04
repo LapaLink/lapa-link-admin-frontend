@@ -7,6 +7,16 @@ const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   timeZone: TIME_ZONE,
 })
 
+/** Picks the Russian plural form for `n`: [1 день, 2 дня, 5 дней]. */
+export function pluralRu(n: number, [one, few, many]: readonly [string, string, string]) {
+  const mod100 = n % 100
+  const mod10 = n % 10
+  if (mod100 >= 11 && mod100 <= 14) return many
+  if (mod10 === 1) return one
+  if (mod10 >= 2 && mod10 <= 4) return few
+  return many
+}
+
 export function formatDateTime(value: string | null | undefined) {
   return value ? dateTimeFormat.format(new Date(value)) : "—"
 }

@@ -223,6 +223,9 @@ export const AUDIT_ACTIONS = [
   "USER_EMAIL_CHANGED_REQUEST",
   "USER_LOGOUT",
   "USER_FORGOT_PASSWORD",
+  "SUPPORT_QUESTION_CREATED",
+  "COMPLAINT_CREATED",
+  "ADOPTION_REQUEST_CREATED",
 ] as const
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]
@@ -351,6 +354,55 @@ export type ChatMessage = {
   createdAt: string
   editedAt: string | null
   deletedAt: string | null
+}
+
+export const LIMIT_TYPES = [
+  "CASE_NEW_REQUEST",
+  "SUPPORT_QUESTION_NEW_REQUEST",
+  "COMPLAINT_NEW_REQUEST",
+  "HELP_APPLICATION_NEW_REQUEST",
+  "ADOPTION_REQUEST_NEW_REQUEST",
+  "CONVERSATION_NEW_REQUEST",
+  "USER_EMAIL_CHANGE_REQUEST",
+  "USER_AVATAR_UPLOAD",
+  "SUPPORT_QUESTION_NEW_MESSAGE",
+  "USER_FORGOT_PASSWORD_REQUEST",
+] as const
+
+export type LimitType = (typeof LIMIT_TYPES)[number]
+
+export type LimitBanType = "ACTION" | "ACCOUNT" | "PERMANENT"
+
+export const TIME_UNITS = ["SECONDS", "MINUTES", "HOURS", "DAYS"] as const
+
+export type TimeUnit = (typeof TIME_UNITS)[number]
+
+// The backend omits null fields, so optional ones may be absent as well as null.
+export type OperationLimitInput = {
+  enabled: boolean
+  description?: string | null
+  maxCount: number
+  windowSize: number
+  timeUnit: TimeUnit
+  auditAction?: AuditAction | null
+  limitBanType: LimitBanType
+  banDuration?: number | null
+}
+
+export type OperationLimit = OperationLimitInput & {
+  limitType: LimitType
+  createdAt: string
+  updatedAt: string
+}
+
+export type UserOperationLimit = Omit<OperationLimit, "createdAt" | "updatedAt"> & {
+  count: number
+  remaining: number
+  windowStartedAt?: string | null
+  windowEndsAt?: string | null
+  blocked: boolean
+  blockedUntil?: string | null
+  permanentlyBlocked: boolean
 }
 
 export type NeedType = {

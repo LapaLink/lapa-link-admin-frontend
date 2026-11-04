@@ -6,6 +6,8 @@ import type {
   ComplaintStatus,
   ComplaintTargetType,
   HelpApplicationStatus,
+  LimitBanType,
+  LimitType,
   NeedStatus,
   StatusHistoryTargetType,
 } from "@/lib/api/admin-types"
@@ -159,6 +161,50 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   USER_EMAIL_CHANGED_REQUEST: "Запрос смены email",
   USER_LOGOUT: "Выход из аккаунта",
   USER_FORGOT_PASSWORD: "Запрос восстановления пароля",
+  SUPPORT_QUESTION_CREATED: "Вопрос в поддержку",
+  COMPLAINT_CREATED: "Жалоба подана",
+  ADOPTION_REQUEST_CREATED: "Заявка на постоянный дом",
+}
+
+export const AUDIT_ERROR_LABELS: Record<string, string> = {
+  OPERATION_LIMIT_EXCEEDED: "Превышен лимит операций",
+  OPERATION_BLOCKED: "Операция временно недоступна (бан по лимиту)",
+}
+
+export const LIMIT_TYPE_LABELS: Record<LimitType, string> = {
+  CASE_NEW_REQUEST: "Создание объявления",
+  SUPPORT_QUESTION_NEW_REQUEST: "Вопрос в поддержку",
+  COMPLAINT_NEW_REQUEST: "Жалоба",
+  HELP_APPLICATION_NEW_REQUEST: "Заявка на помощь",
+  ADOPTION_REQUEST_NEW_REQUEST: "Заявка на постоянный дом",
+  CONVERSATION_NEW_REQUEST: "Запрос на чат",
+  USER_EMAIL_CHANGE_REQUEST: "Смена почты",
+  USER_AVATAR_UPLOAD: "Загрузка аватара",
+  SUPPORT_QUESTION_NEW_MESSAGE: "Сообщение в вопросе поддержки",
+  USER_FORGOT_PASSWORD_REQUEST: "Восстановление пароля",
+}
+
+// The backend lists these types but doesn't enforce them yet.
+export const LIMIT_TYPES_NOT_ENFORCED: string[] = ["SUPPORT_QUESTION_NEW_MESSAGE", "USER_FORGOT_PASSWORD_REQUEST"]
+
+export const LIMIT_BAN_TYPE_LABELS: Record<LimitBanType, string> = {
+  ACTION: "Бан операции",
+  ACCOUNT: "Бан аккаунта",
+  PERMANENT: "Бессрочный бан",
+}
+
+export const TIME_UNIT_LABELS: Record<string, string> = {
+  SECONDS: "секунды",
+  MINUTES: "минуты",
+  HOURS: "часы",
+  DAYS: "дни",
+}
+
+export const TIME_UNIT_FORMS: Record<string, readonly [string, string, string]> = {
+  SECONDS: ["секунда", "секунды", "секунд"],
+  MINUTES: ["минута", "минуты", "минут"],
+  HOURS: ["час", "часа", "часов"],
+  DAYS: ["день", "дня", "дней"],
 }
 
 export const SUPPORT_QUESTION_STATUS_LABELS: Record<string, string> = {

@@ -13,7 +13,7 @@ type Variant = React.ComponentProps<typeof Badge>["variant"]
 const USER_STATUS_VARIANTS: Record<UserStatus, Variant> = {
   PENDING_VERIFICATION: "outline",
   ACTIVE: "secondary",
-  SUSPENDED: "destructive",
+  SUSPENDED: "default",
   BLOCKED: "destructive",
   DELETED: "outline",
 }

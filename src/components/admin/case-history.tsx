@@ -108,12 +108,12 @@ export function CaseHistory({
                     : (STATUS_HISTORY_TARGET_LABELS[item.targetType] ?? item.targetType)}
                 </TableCell>
                 <TableCell>
-                  {item.fromStatus === null ? "создано" : (statuses[item.fromStatus] ?? item.fromStatus)}
+                  {item.fromStatus == null ? "создано" : (statuses[item.fromStatus] ?? item.fromStatus)}
                   {" → "}
                   {statuses[item.toStatus] ?? item.toStatus}
                 </TableCell>
                 <TableCell>
-                  {item.actorId === null ? (
+                  {item.actorId == null ? (
                     "Система"
                   ) : (
                     <span className="flex flex-wrap items-center gap-1">

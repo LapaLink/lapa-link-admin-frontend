@@ -11,15 +11,26 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { formatDateTime } from "@/lib/admin/format"
-import { AUDIT_ACTION_LABELS } from "@/lib/admin/labels"
+import {
+  AUDIT_ACTION_LABELS,
+  AUDIT_ERROR_LABELS,
+  LIMIT_BAN_TYPE_LABELS,
+  LIMIT_TYPE_LABELS,
+} from "@/lib/admin/labels"
 import type { AuditLogEntry } from "@/lib/api/admin-types"
+
+function label(labels: Record<string, string>, value: unknown) {
+  return typeof value === "string" ? (labels[value] ?? value) : null
+}
 
 export function EventDetails({ event }: { event: AuditLogEntry }) {
   const rows: [string, string | null][] = [
     ["Идентификатор", event.id],
     ["Инициатор", [event.actorType, event.actorRole, event.actorId].filter(Boolean).join(" · ")],
     ["Объект", [event.targetType, event.targetId].filter(Boolean).join(" · ") || null],
-    ["Код ошибки", event.errorCode],
+    ["Код ошибки", event.errorCode ? (AUDIT_ERROR_LABELS[event.errorCode] ? `${AUDIT_ERROR_LABELS[event.errorCode]} (${event.errorCode})` : event.errorCode) : null],
+    ["Лимит", label(LIMIT_TYPE_LABELS, event.metadata?.limitType)],
+    ["Бан при превышении", label(LIMIT_BAN_TYPE_LABELS, event.metadata?.limitBanType)],
     ["Причина", event.reason],
     ["Запрос", event.requestId],
     ["IP", event.ip],
