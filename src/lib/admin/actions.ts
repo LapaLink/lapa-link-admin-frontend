@@ -163,6 +163,13 @@ export async function deleteLimit(limitType: LimitType) {
   return adminSend("DELETE", `/admin/limits/${encodeURIComponent(limitType)}`)
 }
 
+export async function resetUserLimit(userId: string, limitType: LimitType) {
+  return adminSend(
+    "DELETE",
+    `/admin/limits/users/${encodeURIComponent(userId)}/${encodeURIComponent(limitType)}`
+  )
+}
+
 export async function grantModerator(userId: string) {
   return adminSend<AdminUser>("PUT", `/admin/users/${encodeURIComponent(userId)}/roles/MODERATOR`)
 }

@@ -141,7 +141,7 @@ async function UsersContent({ searchParams }: { searchParams: Promise<SearchPara
                     <div className="flex items-center justify-end gap-1">
                       <ModeratorRoleButton user={user} />
                       {user.status === "SUSPENDED" && (
-                        <span className="text-xs text-muted-foreground">Блокировка снимется автоматически</span>
+                        <span className="text-xs text-muted-foreground">Блокировка снимется автоматически (досрочно — «Сбросить» во вкладке «Лимиты»)</span>
                       )}
                       {user.roles.every((role) => role === "USER") &&
                         (user.status === "ACTIVE" || user.status === "BLOCKED") && (

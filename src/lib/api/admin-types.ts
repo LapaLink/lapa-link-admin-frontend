@@ -226,6 +226,7 @@ export const AUDIT_ACTIONS = [
   "SUPPORT_QUESTION_CREATED",
   "COMPLAINT_CREATED",
   "ADOPTION_REQUEST_CREATED",
+  "USER_LIMIT_RESET",
 ] as const
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]

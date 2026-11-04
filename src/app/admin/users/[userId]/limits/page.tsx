@@ -4,6 +4,7 @@ import { CircleAlertIcon } from "lucide-react"
 
 import { ApiErrorAlert } from "@/components/admin/api-error-alert"
 import { DataTable } from "@/components/admin/data-table"
+import { LimitResetButton } from "@/components/admin/limit-reset-button"
 import { NoResults, TableSkeleton } from "@/components/admin/table-states"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -42,6 +43,7 @@ async function UserLimits({ params }: { params: Promise<{ userId: string }> }) {
           <AlertDescription>
             Блокировка снимется автоматически
             {suspension.blockedUntil ? ` после ${formatDateTime(suspension.blockedUntil)}` : ""}, с задержкой до минуты.
+            Досрочно снять её можно кнопкой «Сбросить» в строке этого лимита.
           </AlertDescription>
         </Alert>
       )}
@@ -49,7 +51,7 @@ async function UserLimits({ params }: { params: Promise<{ userId: string }> }) {
         <Alert variant="destructive">
           <CircleAlertIcon />
           <AlertTitle>Бессрочный бан по лимиту «{LIMIT_TYPE_LABELS[permanent.limitType] ?? permanent.limitType}»</AlertTitle>
-          <AlertDescription>Снять его можно кнопкой «Разблокировать» в списке пользователей.</AlertDescription>
+          <AlertDescription>Снять его можно кнопкой «Сбросить» в строке этого лимита или «Разблокировать» в списке пользователей.</AlertDescription>
         </Alert>
       )}
       <DataTable>
@@ -59,6 +61,7 @@ async function UserLimits({ params }: { params: Promise<{ userId: string }> }) {
             <TableHead>Использовано</TableHead>
             <TableHead>Окно</TableHead>
             <TableHead>Состояние</TableHead>
+            <TableHead />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -104,6 +107,16 @@ async function UserLimits({ params }: { params: Promise<{ userId: string }> }) {
                   </Badge>
                 ) : (
                   "—"
+                )}
+              </TableCell>
+              <TableCell className="text-right">
+                {(item.blocked || item.count > 0) && (
+                  <LimitResetButton
+                    userId={userId}
+                    limitType={item.limitType}
+                    limitBanType={item.limitBanType}
+                    blocked={item.blocked}
+                  />
                 )}
               </TableCell>
             </TableRow>

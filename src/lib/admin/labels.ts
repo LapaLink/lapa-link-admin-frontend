@@ -164,6 +164,7 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   SUPPORT_QUESTION_CREATED: "Вопрос в поддержку",
   COMPLAINT_CREATED: "Жалоба подана",
   ADOPTION_REQUEST_CREATED: "Заявка на постоянный дом",
+  USER_LIMIT_RESET: "Сброс лимита пользователя",
 }
 
 export const AUDIT_ERROR_LABELS: Record<string, string> = {
