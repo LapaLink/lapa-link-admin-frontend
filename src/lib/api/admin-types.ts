@@ -22,6 +22,20 @@ export type AdminUser = {
   createdAt: string
 }
 
+export type CityGroup = {
+  cities: { code: string; nameRu: string; nameBe: string }[]
+}
+
+export type AdminUserDetails = AdminUser & {
+  updatedAt: string
+  cityCode?: string | null
+  homeLatitude?: number | null
+  homeLongitude?: number | null
+  avatarUrl?: string | null
+  bio?: string | null
+  phone?: string | null
+}
+
 export type CaseStatus = "DRAFT" | "PENDING_REVIEW" | "OPEN" | "REJECTED" | "CLOSED" | "HIDDEN"
 
 export type AnimalType = "CAT" | "DOG"

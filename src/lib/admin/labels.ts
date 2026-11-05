@@ -64,7 +64,7 @@ export const NEED_STATUS_LABELS: Record<NeedStatus, string> = {
   CLOSED: "Закрыта",
 }
 
-// Moderators never see drafts in admin lists, so status filters leave DRAFT out.
+// The per-user case list still leaves drafts out; the common admin list includes them.
 export const CASE_STATUS_FILTER_OPTIONS = Object.entries(CASE_STATUS_LABELS).filter(([value]) => value !== "DRAFT")
 
 export const STATUS_HISTORY_TARGET_LABELS: Record<StatusHistoryTargetType, string> = {

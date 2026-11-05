@@ -101,12 +101,16 @@ async function ModerationCase({ params }: { params: Promise<{ caseId: string }> 
       )}
       <CaseTabs
         history={
-          <CaseHistory
-            caseId={item.id}
-            authorId={item.author.id}
-            needs={item.needs}
-            canReadUsers={getPrivileges(user).includes("USER_READ")}
-          />
+          item.status === "DRAFT" ? (
+            <NoResults description="История статусов черновика доступна только автору" />
+          ) : (
+            <CaseHistory
+              caseId={item.id}
+              authorId={item.author.id}
+              needs={item.needs}
+              canReadUsers={getPrivileges(user).includes("USER_READ")}
+            />
+          )
         }
       >
         {item.status === "CLOSED" && item.closeComment && (
