@@ -20,6 +20,7 @@ import type {
   NeedType,
   NotificationTemplate,
   NotificationTemplateContent,
+  StatusHistoryItem,
   SupportQuestion,
 } from "@/lib/api/admin-types"
 
@@ -69,6 +70,10 @@ export async function hideCase(caseId: string, reason: string) {
 
 export async function restoreCase(caseId: string) {
   return adminSend<AdminCase>("POST", `/admin/cases/${encodeURIComponent(caseId)}/restore`)
+}
+
+export async function getCaseHistory(caseId: string) {
+  return adminGet<StatusHistoryItem[]>(`/cases/${encodeURIComponent(caseId)}/history`)
 }
 
 export async function closeCase(caseId: string, reason: string) {
