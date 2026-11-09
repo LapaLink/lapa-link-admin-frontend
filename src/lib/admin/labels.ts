@@ -8,7 +8,6 @@ import type {
   HelpApplicationStatus,
   LimitBanType,
   NeedStatus,
-  StatusHistoryTargetType,
 } from "@/lib/api/admin-types"
 import type { RoleCode, UserStatus } from "@/lib/api/types"
 
@@ -66,27 +65,6 @@ export const NEED_STATUS_LABELS: Record<NeedStatus, string> = {
 
 // The per-user case list still leaves drafts out; the common admin list includes them.
 export const CASE_STATUS_FILTER_OPTIONS = Object.entries(CASE_STATUS_LABELS).filter(([value]) => value !== "DRAFT")
-
-export const STATUS_HISTORY_TARGET_LABELS: Record<StatusHistoryTargetType, string> = {
-  CASE: "Объявление",
-  NEED: "Потребность",
-  ASSIGNMENT: "Назначение",
-  HELP_APPLICATION: "Отклик",
-}
-
-export const STATUS_HISTORY_STATUS_LABELS: Record<StatusHistoryTargetType, Record<string, string>> = {
-  CASE: {
-    DRAFT: "черновик",
-    PENDING_REVIEW: "на модерации",
-    OPEN: "открыто",
-    REJECTED: "отклонено",
-    CLOSED: "закрыто",
-    HIDDEN: "скрыто",
-  },
-  NEED: { OPEN: "открыта", ASSIGNED: "исполнитель выбран", CLOSED: "закрыта" },
-  ASSIGNMENT: { ACTIVE: "выполняется", COMPLETED: "завершено", CANCELLED: "отменено" },
-  HELP_APPLICATION: { PENDING: "ожидает", ACCEPTED: "принят", CANCELLED: "отменён" },
-}
 
 export const NOTIFICATION_EVENT_LABELS: Record<string, string> = {
   EMAIL_VERIFICATION: "Подтверждение email",

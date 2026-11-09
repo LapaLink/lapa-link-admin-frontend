@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 
 import { AdminNavigation, AdminSidebar } from "@/components/admin/admin-sidebar"
+import { AdminBreadcrumbs } from "@/components/admin/breadcrumbs"
 import { CommandMenu } from "@/components/admin/command-menu"
 import { NavUser } from "@/components/admin/nav-user"
 import { Separator } from "@/components/ui/separator"
@@ -36,7 +37,12 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
               <CurrentCommandMenu />
             </Suspense>
           </header>
-          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-4 md:p-6">{children}</div>
+          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-4 md:p-6">
+            <Suspense fallback={null}>
+              <AdminBreadcrumbs />
+            </Suspense>
+            {children}
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </Toaster>
