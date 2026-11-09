@@ -17,7 +17,7 @@ export function highlightExpressions(html: string) {
   )
 }
 
-export function buildPreviewDocument(body: string, channel: "EMAIL" | "IN_APP") {
+export function buildPreviewDocument(body: string, channel: "EMAIL" | "IN_APP" | "SMS") {
   const content = highlightExpressions(body)
   const frame =
     channel === "EMAIL"

@@ -16,7 +16,19 @@ export function UserProfile({ user, cityName }: { user: AdminUserDetails; cityNa
   const hasHome = user.homeLatitude != null && user.homeLongitude != null
   const rows: [string, React.ReactNode][] = [
     ["Email", user.email + (user.emailVerifiedAt ? "" : " (не подтверждён)")],
-    ["Телефон", user.phone ?? EMPTY],
+    [
+      "Телефон",
+      user.phone ? (
+        <span className="flex flex-wrap items-center gap-2">
+          {user.phone}
+          <Badge variant={user.phoneConfirmed ? "secondary" : "outline"}>
+            {user.phoneConfirmed ? "Подтверждён" : "Не подтверждён"}
+          </Badge>
+        </span>
+      ) : (
+        EMPTY
+      ),
+    ],
     ["Город", user.cityCode ? (cityName ?? user.cityCode) : EMPTY],
     ["Язык", user.locale],
     ["О себе", user.bio ? <span className="whitespace-pre-line">{user.bio}</span> : EMPTY],

@@ -24,6 +24,7 @@ export const metadata: Metadata = { title: "Шаблоны уведомлени�
 const CHANNEL_LABELS: Record<NotificationTemplate["channel"], string> = {
   EMAIL: "Email",
   IN_APP: "В приложении",
+  SMS: "SMS-сообщения",
 }
 
 export default function NotificationTemplatesPage() {

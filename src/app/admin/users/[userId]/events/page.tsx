@@ -54,11 +54,16 @@ async function UserEvents({
   const { userId } = await params
   const query = pickParams(await searchParams, PARAMS)
   const minFrom = localDateTimeDaysAgo(RETENTION_DAYS)
-  const result = await adminGet<Page<AuditLogEntry>>(`/admin/users/${userId}/events`, {
-    ...query,
-    from: localDateTimeToInstant(query.from),
-    to: localDateTimeToInstant(query.to),
-  })
+  const [result, dictionary] = await Promise.all([
+    adminGet<Page<AuditLogEntry>>(`/admin/users/${userId}/events`, {
+      ...query,
+      from: localDateTimeToInstant(query.from),
+      to: localDateTimeToInstant(query.to),
+    }),
+    adminGet<{ auditActions?: string[] }>("/dictionary"),
+  ])
+  // The filter takes its actions from the backend dictionary; the bundled list is only a fallback.
+  const auditActions = dictionary.ok && dictionary.data.auditActions ? dictionary.data.auditActions : [...AUDIT_ACTIONS]
 
   return (
     <>
@@ -67,9 +72,9 @@ async function UserEvents({
           <FieldLabel htmlFor="action">Действие</FieldLabel>
           <NativeSelect id="action" name="action" defaultValue={query.action ?? ""}>
             <NativeSelectOption value="">Все</NativeSelectOption>
-            {AUDIT_ACTIONS.map((action) => (
+            {auditActions.map((action) => (
               <NativeSelectOption key={action} value={action}>
-                {AUDIT_ACTION_LABELS[action] ?? action}
+                {(AUDIT_ACTION_LABELS as Record<string, string>)[action] ?? action}
               </NativeSelectOption>
             ))}
           </NativeSelect>

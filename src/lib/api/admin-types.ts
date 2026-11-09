@@ -34,6 +34,8 @@ export type AdminUserDetails = AdminUser & {
   avatarUrl?: string | null
   bio?: string | null
   phone?: string | null
+  /** The phone was confirmed by an SMS code; false when there is no phone or it is unconfirmed. */
+  phoneConfirmed?: boolean
 }
 
 export type CaseStatus = "DRAFT" | "PENDING_REVIEW" | "OPEN" | "REJECTED" | "CLOSED" | "HIDDEN"
@@ -241,6 +243,8 @@ export const AUDIT_ACTIONS = [
   "COMPLAINT_CREATED",
   "ADOPTION_REQUEST_CREATED",
   "USER_LIMIT_RESET",
+  "USER_PHONE_CONFIRMATION_REQUESTED",
+  "USER_PHONE_CONFIRMED",
 ] as const
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]
@@ -307,7 +311,7 @@ export type CacheEntry = {
 
 export type NotificationTemplate = {
   eventType: string
-  channel: "EMAIL" | "IN_APP"
+  channel: "EMAIL" | "IN_APP" | "SMS"
   locales: ("RU" | "BE")[]
 }
 

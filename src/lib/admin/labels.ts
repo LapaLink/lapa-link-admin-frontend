@@ -115,6 +115,7 @@ export const NOTIFICATION_EVENT_LABELS: Record<string, string> = {
   CHAT_DECLINED: "Чат отклонён",
   HELP_OFFER_MATCHED: "Подходящее объявление",
   MODERATION_WARNING: "Предупреждение модератора",
+  PHONE_CONFIRMATION: "Подтверждение телефона",
 }
 
 export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
@@ -164,6 +165,8 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   COMPLAINT_CREATED: "Жалоба подана",
   ADOPTION_REQUEST_CREATED: "Заявка на постоянный дом",
   USER_LIMIT_RESET: "Сброс лимита пользователя",
+  USER_PHONE_CONFIRMATION_REQUESTED: "Запрошено подтверждение телефона",
+  USER_PHONE_CONFIRMED: "Телефон подтверждён",
 }
 
 export const AUDIT_ERROR_LABELS: Record<string, string> = {

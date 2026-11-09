@@ -61,7 +61,7 @@ export function TemplateViewer({ template }: { template: NotificationTemplate })
         <SheetHeader>
           <SheetTitle className="font-mono">{template.eventType}</SheetTitle>
           <SheetDescription>
-            {template.channel === "EMAIL" ? "Email" : "Уведомление в приложении"}. Переменные{" "}
+            {template.channel === "EMAIL" ? "Email" : template.channel === "SMS" ? "SMS-сообщение" : "Уведомление в приложении"}. Переменные{" "}
             <code className="font-mono">{"${…}"}</code> показаны без подстановки.
           </SheetDescription>
         </SheetHeader>
