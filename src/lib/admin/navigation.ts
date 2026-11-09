@@ -6,6 +6,7 @@ import {
   GaugeIcon,
   FileTextIcon,
   LayoutDashboardIcon,
+  MegaphoneIcon,
   MailIcon,
   MessagesSquareIcon,
   ShieldCheckIcon,
@@ -56,6 +57,13 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         href: "/admin/support",
         icon: MessagesSquareIcon,
         privilege: "SUPPORT_MANAGE",
+      },
+      {
+        title: "Рассылки",
+        description: "Рассылки по SMS, email и в приложении",
+        href: "/admin/broadcasts",
+        icon: MegaphoneIcon,
+        privilege: "BROADCAST_MANAGE",
       },
       {
         title: "Объявления",

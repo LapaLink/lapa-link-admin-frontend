@@ -22,6 +22,34 @@ export type AdminUser = {
   createdAt: string
 }
 
+export type BroadcastChannel = "EMAIL" | "SMS" | "IN_APP"
+
+export type BroadcastAudience = "USER" | "USERS" | "ALL"
+
+export type BroadcastInput = {
+  channel: BroadcastChannel
+  audience: BroadcastAudience
+  userIds?: string[]
+  title: string
+  message: string
+}
+
+export type Broadcast = {
+  id: string
+  channel: BroadcastChannel
+  audience: BroadcastAudience
+  title: string
+  message: string
+  createdBy: string
+  createdByName?: string | null
+  totalRecipients: number
+  sent: number
+  failed: number
+  skipped: number
+  pending: number
+  createdAt: string
+}
+
 export type PhoneConfirmationCode = {
   requestId: string
   type: string
@@ -254,6 +282,8 @@ export const AUDIT_ACTIONS = [
   "USER_PHONE_CONFIRMATION_REQUESTED",
   "USER_PHONE_CONFIRMED",
   "USER_OTP_VIEWED",
+  "BROADCAST_SENT",
+  "BROADCAST_DELETED",
 ] as const
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]

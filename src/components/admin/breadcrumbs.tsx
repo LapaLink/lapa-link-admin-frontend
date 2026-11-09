@@ -12,6 +12,7 @@ const ITEM_LABELS: Record<string, string> = {
   moderation: "Объявление",
   complaints: "Жалоба",
   support: "Вопрос",
+  broadcasts: "Рассылка",
 }
 
 // /admin/users/<id>/<tab>
@@ -29,6 +30,7 @@ const SECTION_LABELS = Object.fromEntries(
 function label(segments: string[], index: number) {
   const segment = segments[index]
   if (index === 1) return SECTION_LABELS[`/admin/${segment}`] ?? segment
+  if (index === 2 && segments[1] === "broadcasts" && segment === "new") return "Новая рассылка"
   if (index === 2) return ITEM_LABELS[segments[1]] ?? segment
   if (index === 3 && segments[1] === "users") return USER_TAB_LABELS[segment] ?? segment
   return segment

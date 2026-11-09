@@ -9,6 +9,8 @@ import type {
   AdminComplaint,
   AdminJob,
   AdminUser,
+  Broadcast,
+  BroadcastInput,
   CacheEntry,
   ChatMessage,
   CacheType,
@@ -17,6 +19,7 @@ import type {
   LimitType,
   OperationLimit,
   OperationLimitInput,
+  Page,
   PhoneConfirmationCode,
   NeedType,
   NotificationTemplate,
@@ -174,6 +177,23 @@ export async function resetUserLimit(userId: string, limitType: LimitType) {
 /** The code is returned to the client for display only; callers must not store or log it. */
 export async function getPhoneConfirmationCode(userId: string) {
   return adminGet<PhoneConfirmationCode>(`/admin/users/${encodeURIComponent(userId)}/phone-confirmation-code`)
+}
+
+export async function createBroadcast(input: BroadcastInput) {
+  return adminSend<Broadcast>("POST", "/admin/broadcasts", input)
+}
+
+export async function getBroadcast(id: string) {
+  return adminGet<Broadcast>(`/admin/broadcasts/${encodeURIComponent(id)}`)
+}
+
+export async function deleteBroadcast(id: string) {
+  return adminSend("DELETE", `/admin/broadcasts/${encodeURIComponent(id)}`)
+}
+
+/** User search for the broadcast recipient picker. */
+export async function searchUsers(search: string) {
+  return adminGet<Page<AdminUser>>("/admin/users", { search, size: "10" })
 }
 
 export async function grantModerator(userId: string) {

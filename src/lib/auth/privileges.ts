@@ -2,6 +2,7 @@ import type { CurrentUser, RoleCode } from "@/lib/api/types"
 
 export type Privilege =
   | "AUDIT_LOG_READ"
+  | "BROADCAST_MANAGE"
   | "CONTENT_MODERATE"
   | "DICTIONARY_MANAGE"
   | "OTP_READ"
@@ -14,9 +15,10 @@ export type Privilege =
 const ROLE_PRIVILEGES: Record<RoleCode, Privilege[]> = {
   USER: [],
   MODERATOR: ["CONTENT_MODERATE"],
-  ADMIN: ["AUDIT_LOG_READ", "CONTENT_MODERATE", "DICTIONARY_MANAGE", "OTP_READ", "SETTINGS_MANAGE", "SUPPORT_MANAGE", "USER_READ"],
+  ADMIN: ["AUDIT_LOG_READ", "BROADCAST_MANAGE", "CONTENT_MODERATE", "DICTIONARY_MANAGE", "OTP_READ", "SETTINGS_MANAGE", "SUPPORT_MANAGE", "USER_READ"],
 }
 
 export function getPrivileges(user: CurrentUser): Privilege[] {
+  if (user.privileges) return user.privileges as Privilege[]
   return [...new Set(user.roles.flatMap((role) => ROLE_PRIVILEGES[role] ?? []))]
 }

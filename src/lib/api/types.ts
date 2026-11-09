@@ -33,6 +33,8 @@ export type CurrentUser = {
   lastLoginAt: string | null
   createdAt: string
   avatarUrl: string | null
+  /** Effective privileges; older backends omit it and the roles are mapped instead. */
+  privileges?: string[]
 }
 
 export type ApiError = {

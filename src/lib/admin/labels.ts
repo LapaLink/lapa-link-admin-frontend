@@ -116,6 +116,7 @@ export const NOTIFICATION_EVENT_LABELS: Record<string, string> = {
   HELP_OFFER_MATCHED: "Подходящее объявление",
   MODERATION_WARNING: "Предупреждение модератора",
   PHONE_CONFIRMATION: "Подтверждение телефона",
+  BROADCAST: "Рассылка",
 }
 
 export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
@@ -168,6 +169,8 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   USER_PHONE_CONFIRMATION_REQUESTED: "Запрошено подтверждение телефона",
   USER_PHONE_CONFIRMED: "Телефон подтверждён",
   USER_OTP_VIEWED: "Просмотрен код подтверждения",
+  BROADCAST_SENT: "Отправлена рассылка",
+  BROADCAST_DELETED: "Рассылка удалена из истории",
 }
 
 export const AUDIT_ERROR_LABELS: Record<string, string> = {
@@ -193,6 +196,18 @@ export const TIME_UNIT_FORMS: Record<string, readonly [string, string, string]> 
   MINUTES: ["минута", "минуты", "минут"],
   HOURS: ["час", "часа", "часов"],
   DAYS: ["день", "дня", "дней"],
+}
+
+export const BROADCAST_CHANNEL_LABELS: Record<string, string> = {
+  EMAIL: "Email",
+  SMS: "SMS",
+  IN_APP: "В приложении (обязательное окно)",
+}
+
+export const BROADCAST_AUDIENCE_LABELS: Record<string, string> = {
+  USER: "Одному пользователю",
+  USERS: "Выбранным пользователям",
+  ALL: "Всем активным",
 }
 
 export const SUPPORT_QUESTION_STATUS_LABELS: Record<string, string> = {
