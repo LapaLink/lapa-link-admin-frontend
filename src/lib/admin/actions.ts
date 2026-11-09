@@ -17,6 +17,7 @@ import type {
   LimitType,
   OperationLimit,
   OperationLimitInput,
+  PhoneConfirmationCode,
   NeedType,
   NotificationTemplate,
   NotificationTemplateContent,
@@ -168,6 +169,11 @@ export async function resetUserLimit(userId: string, limitType: LimitType) {
     "DELETE",
     `/admin/limits/users/${encodeURIComponent(userId)}/${encodeURIComponent(limitType)}`
   )
+}
+
+/** The code is returned to the client for display only; callers must not store or log it. */
+export async function getPhoneConfirmationCode(userId: string) {
+  return adminGet<PhoneConfirmationCode>(`/admin/users/${encodeURIComponent(userId)}/phone-confirmation-code`)
 }
 
 export async function grantModerator(userId: string) {

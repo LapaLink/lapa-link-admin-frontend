@@ -167,6 +167,7 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   USER_LIMIT_RESET: "Сброс лимита пользователя",
   USER_PHONE_CONFIRMATION_REQUESTED: "Запрошено подтверждение телефона",
   USER_PHONE_CONFIRMED: "Телефон подтверждён",
+  USER_OTP_VIEWED: "Просмотрен код подтверждения",
 }
 
 export const AUDIT_ERROR_LABELS: Record<string, string> = {

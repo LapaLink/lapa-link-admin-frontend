@@ -49,7 +49,7 @@ async function UserHeader({ params }: Pick<LayoutProps<"/admin/users/[userId]">,
         title="Пользователь"
         description={<span className="font-mono">{userId}</span>}
       />
-      {details && (details.ok ? <UserProfile user={details.data} cityName={cityName} /> : <ApiErrorAlert error={details.error} />)}
+      {details && (details.ok ? <UserProfile user={details.data} cityName={cityName} canViewOtp={privileges.includes("OTP_READ")} /> : <ApiErrorAlert error={details.error} />)}
       <UserTabs userId={userId} privileges={privileges} />
     </>
   )

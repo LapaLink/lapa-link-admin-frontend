@@ -22,6 +22,14 @@ export type AdminUser = {
   createdAt: string
 }
 
+export type PhoneConfirmationCode = {
+  requestId: string
+  type: string
+  code: string
+  phone: string
+  expiresInSeconds: number
+}
+
 export type CityGroup = {
   cities: { code: string; nameRu: string; nameBe: string }[]
 }
@@ -245,6 +253,7 @@ export const AUDIT_ACTIONS = [
   "USER_LIMIT_RESET",
   "USER_PHONE_CONFIRMATION_REQUESTED",
   "USER_PHONE_CONFIRMED",
+  "USER_OTP_VIEWED",
 ] as const
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]

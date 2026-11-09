@@ -1,3 +1,4 @@
+import { PhoneCodeButton } from "@/components/admin/phone-code-button"
 import { UserStatusBadge } from "@/components/admin/status-badges"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -12,7 +13,15 @@ const EMPTY = "не указано"
  * Profile of the user shown in the admin section. The phone and the home point are personal data:
  * they are rendered only here and are never logged.
  */
-export function UserProfile({ user, cityName }: { user: AdminUserDetails; cityName: string | null }) {
+export function UserProfile({
+  user,
+  cityName,
+  canViewOtp,
+}: {
+  user: AdminUserDetails
+  cityName: string | null
+  canViewOtp: boolean
+}) {
   const hasHome = user.homeLatitude != null && user.homeLongitude != null
   const rows: [string, React.ReactNode][] = [
     ["Email", user.email + (user.emailVerifiedAt ? "" : " (не подтверждён)")],
@@ -24,6 +33,7 @@ export function UserProfile({ user, cityName }: { user: AdminUserDetails; cityNa
           <Badge variant={user.phoneConfirmed ? "secondary" : "outline"}>
             {user.phoneConfirmed ? "Подтверждён" : "Не подтверждён"}
           </Badge>
+          {!user.phoneConfirmed && canViewOtp && <PhoneCodeButton userId={user.id} />}
         </span>
       ) : (
         EMPTY
