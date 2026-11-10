@@ -9,6 +9,7 @@ import { FilterForm } from "@/components/admin/filter-form"
 import { PageHeader } from "@/components/admin/page-header"
 import { CaseVisibilityActions } from "@/components/admin/case-visibility-actions"
 import { CaseStatusBadge } from "@/components/admin/status-badges"
+import { SortableHead } from "@/components/admin/sortable-head"
 import { TablePagination } from "@/components/admin/table-pagination"
 import { NoResults, TableSkeleton } from "@/components/admin/table-states"
 import { Button } from "@/components/ui/button"
@@ -29,7 +30,7 @@ import type { AdminCase, Page } from "@/lib/api/admin-types"
 
 export const metadata: Metadata = { title: "Объявления" }
 
-const PARAMS = ["search", "status", "authorId", "size", "page"] as const
+const PARAMS = ["search", "status", "authorId", "sort", "size", "page"] as const
 
 export default function CasesPage({ searchParams }: PageProps<"/admin/cases">) {
   return (
@@ -48,6 +49,7 @@ export default function CasesPage({ searchParams }: PageProps<"/admin/cases">) {
 async function Cases({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const query = pickParams(await searchParams, PARAMS)
   const result = await adminGet<Page<AdminCase>>("/admin/cases", query)
+  const sortProps = { sort: query.sort, defaultSort: "createdAt,desc", basePath: "/admin/cases", params: query }
 
   return (
     <>
@@ -68,6 +70,7 @@ async function Cases({ searchParams }: { searchParams: Promise<SearchParams> }) 
           </NativeSelect>
         </Field>
         {query.authorId && <input type="hidden" name="authorId" value={query.authorId} />}
+        {query.sort && <input type="hidden" name="sort" value={query.sort} />}
       </FilterForm>
       {!result.ok ? (
         <ApiErrorAlert error={result.error} />
@@ -78,12 +81,12 @@ async function Cases({ searchParams }: { searchParams: Promise<SearchParams> }) 
           <DataTable>
             <TableHeader>
               <TableRow>
-                <TableHead>Заголовок</TableHead>
-                <TableHead>Животное</TableHead>
-                <TableHead>Город</TableHead>
-                <TableHead>Статус</TableHead>
+                <SortableHead field="title" label="Заголовок" {...sortProps} />
+                <SortableHead field="animalType" label="Животное" {...sortProps} />
+                <SortableHead field="cityCode" label="Город" {...sortProps} />
+                <SortableHead field="status" label="Статус" {...sortProps} />
                 <TableHead>Автор</TableHead>
-                <TableHead>Создано</TableHead>
+                <SortableHead field="createdAt" label="Создано" {...sortProps} />
                 <TableHead />
               </TableRow>
             </TableHeader>

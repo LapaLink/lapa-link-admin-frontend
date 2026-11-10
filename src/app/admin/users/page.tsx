@@ -7,6 +7,7 @@ import { DataTable } from "@/components/admin/data-table"
 import { FilterForm } from "@/components/admin/filter-form"
 import { ModeratorRoleButton } from "@/components/admin/moderator-role-button"
 import { PageHeader } from "@/components/admin/page-header"
+import { SortableHead } from "@/components/admin/sortable-head"
 import { TablePagination } from "@/components/admin/table-pagination"
 import { NoResults, TableSkeleton } from "@/components/admin/table-states"
 import { UserBlockButton } from "@/components/admin/user-block-button"
@@ -31,14 +32,6 @@ export const metadata: Metadata = { title: "Пользователи" }
 
 const PARAMS = ["search", "status", "role", "sort", "size", "page"] as const
 
-const SORT_OPTIONS = [
-  { value: "", label: "Сначала новые" },
-  { value: "createdAt,asc", label: "Сначала старые" },
-  { value: "lastLoginAt,desc", label: "По последнему входу" },
-  { value: "email,asc", label: "По email" },
-  { value: "displayName,asc", label: "По имени" },
-]
-
 export default function UsersPage({ searchParams }: PageProps<"/admin/users">) {
   return (
     <>
@@ -53,6 +46,8 @@ export default function UsersPage({ searchParams }: PageProps<"/admin/users">) {
 async function UsersContent({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = pickParams(await searchParams, PARAMS)
   const result = await adminGet<Page<AdminUser>>("/admin/users", params)
+  // Sorting happens on the backend; roles are not sortable because they are a collection per user.
+  const sortProps = { sort: params.sort, defaultSort: "createdAt,desc", basePath: "/admin/users", params }
 
   return (
     <>
@@ -83,16 +78,7 @@ async function UsersContent({ searchParams }: { searchParams: Promise<SearchPara
             ))}
           </NativeSelect>
         </Field>
-        <Field className="w-auto">
-          <FieldLabel htmlFor="sort">Сортировка</FieldLabel>
-          <NativeSelect id="sort" name="sort" defaultValue={params.sort ?? ""}>
-            {SORT_OPTIONS.map((option) => (
-              <NativeSelectOption key={option.value} value={option.value}>
-                {option.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </Field>
+        {params.sort && <input type="hidden" name="sort" value={params.sort} />}
       </FilterForm>
       {!result.ok ? (
         <ApiErrorAlert error={result.error} />
@@ -103,11 +89,11 @@ async function UsersContent({ searchParams }: { searchParams: Promise<SearchPara
           <DataTable>
             <TableHeader>
               <TableRow>
-                <TableHead>Пользователь</TableHead>
-                <TableHead>Статус</TableHead>
+                <SortableHead field="displayName" label="Пользователь" {...sortProps} />
+                <SortableHead field="status" label="Статус" {...sortProps} />
                 <TableHead>Роли</TableHead>
-                <TableHead>Зарегистрирован</TableHead>
-                <TableHead>Последний вход</TableHead>
+                <SortableHead field="createdAt" label="Зарегистрирован" {...sortProps} />
+                <SortableHead field="lastLoginAt" label="Последний вход" {...sortProps} />
                 <TableHead />
               </TableRow>
             </TableHeader>
