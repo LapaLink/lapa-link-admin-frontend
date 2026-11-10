@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
+import debounce from "lodash.debounce"
 import { CircleAlertIcon, SendIcon, XIcon } from "lucide-react"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -27,6 +28,7 @@ import { createBroadcast, searchUsers } from "@/lib/admin/actions"
 import { BROADCAST_AUDIENCE_LABELS, BROADCAST_CHANNEL_LABELS } from "@/lib/admin/labels"
 import type { AdminUser, BroadcastAudience, BroadcastChannel } from "@/lib/api/admin-types"
 import type { ApiError } from "@/lib/api/types"
+import { cn } from "@/lib/utils"
 
 const TITLE_MAX = 150
 const MESSAGE_MAX = 2000
@@ -214,7 +216,13 @@ export function BroadcastForm({ canSearchUsers }: { canSearchUsers: boolean }) {
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const SEARCH_DELAY_MS = 300
+const SEARCH_MIN_LENGTH = 2
 
+/**
+ * Recipient picker. With USER_READ it is a search field with a dropdown (debounced requests, keyboard
+ * navigation); without it, a plain input for a user id.
+ */
 function RecipientPicker({
   canSearch,
   recipients,
@@ -231,23 +239,74 @@ function RecipientPicker({
   onRemove: (id: string) => void
 }) {
   const [query, setQuery] = useState("")
-  const [found, setFound] = useState<AdminUser[]>()
+  const [results, setResults] = useState<AdminUser[]>([])
+  const [open, setOpen] = useState(false)
+  const [active, setActive] = useState(0)
+  const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState<string>()
-  const [searching, startSearch] = useTransition()
+  const container = useRef<HTMLDivElement>(null)
+  const selected = new Set(recipients.map((item) => item.id))
+  const searched = query.trim().length >= SEARCH_MIN_LENGTH
 
-  function search() {
-    const text = query.trim()
-    if (!text) return
-    setSearchError(undefined)
-    startSearch(async () => {
+  // Debounced search; `invalidate` drops the answer of any request already in flight.
+  const search = useMemo(() => {
+    let latest = 0
+    const run = debounce(async (text: string) => {
+      const request = ++latest
       const result = await searchUsers(text)
+      if (request !== latest) return
+      setSearching(false)
       if (!result.ok) {
-        setFound(undefined)
+        setResults([])
         setSearchError(result.error.message)
         return
       }
-      setFound(result.data.content)
-    })
+      setSearchError(undefined)
+      setResults(result.data.content)
+      setActive(0)
+    }, SEARCH_DELAY_MS)
+    return {
+      run,
+      invalidate: () => {
+        run.cancel()
+        latest++
+      },
+    }
+  }, [])
+
+  useEffect(() => search.invalidate, [search])
+
+  useEffect(() => {
+    function closeOutside(event: MouseEvent) {
+      if (!container.current?.contains(event.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", closeOutside)
+    return () => document.removeEventListener("mousedown", closeOutside)
+  }, [])
+
+  function handleChange(value: string) {
+    setQuery(value)
+    setSearchError(undefined)
+    if (!canSearch) return
+    setOpen(true)
+    if (value.trim().length < SEARCH_MIN_LENGTH) {
+      search.invalidate()
+      setSearching(false)
+      setResults([])
+      return
+    }
+    setSearching(true)
+    search.run(value.trim())
+  }
+
+  function select(user: AdminUser) {
+    if (selected.has(user.id)) return
+    onAdd({ id: user.id, label: user.displayName ?? user.email })
+    if (limit === 1) {
+      setQuery("")
+      setResults([])
+      setOpen(false)
+    }
   }
 
   function addById() {
@@ -261,50 +320,102 @@ function RecipientPicker({
     setQuery("")
   }
 
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (!canSearch) {
+      if (event.key === "Enter") {
+        event.preventDefault()
+        addById()
+      }
+      return
+    }
+    if (event.key === "ArrowDown" && results.length > 0) {
+      event.preventDefault()
+      setOpen(true)
+      setActive((current) => (current + 1) % results.length)
+    } else if (event.key === "ArrowUp" && results.length > 0) {
+      event.preventDefault()
+      setActive((current) => (current - 1 + results.length) % results.length)
+    } else if (event.key === "Enter" && open && results[active]) {
+      event.preventDefault()
+      select(results[active])
+    } else if (event.key === "Escape") {
+      setOpen(false)
+    }
+  }
+
+  const showList = canSearch && open && searched && !searching
+  const listId = "recipient-list"
+
   return (
     <Field data-invalid={Boolean(error)}>
-      <FieldLabel htmlFor="recipient">Получатели ({recipients.length}/{limit})</FieldLabel>
-      <div className="flex gap-2">
-        <Input
-          id="recipient"
-          value={query}
-          placeholder={canSearch ? "Имя или email" : "Идентификатор пользователя"}
-          onChange={(event) => setQuery(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key !== "Enter") return
-            event.preventDefault()
-            if (canSearch) search()
-            else addById()
-          }}
-        />
-        <Button type="button" variant="outline" onClick={canSearch ? search : addById} disabled={searching}>
-          {searching && <Spinner data-icon="inline-start" />}
-          {canSearch ? "Найти" : "Добавить"}
-        </Button>
+      <FieldLabel htmlFor="recipient">
+        Получатели ({recipients.length}/{limit})
+      </FieldLabel>
+      <div ref={container} className="relative">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Input
+              id="recipient"
+              value={query}
+              autoComplete="off"
+              placeholder={canSearch ? "Имя или email" : "Идентификатор пользователя"}
+              role={canSearch ? "combobox" : undefined}
+              aria-expanded={canSearch ? showList : undefined}
+              aria-controls={canSearch ? listId : undefined}
+              aria-activedescendant={showList && results[active] ? `recipient-${results[active].id}` : undefined}
+              onChange={(event) => handleChange(event.target.value)}
+              onFocus={() => canSearch && setOpen(true)}
+              onKeyDown={handleKeyDown}
+            />
+            {searching && <Spinner className="absolute top-1/2 right-3 -translate-y-1/2" />}
+          </div>
+          {!canSearch && (
+            <Button type="button" variant="outline" onClick={addById}>
+              Добавить
+            </Button>
+          )}
+        </div>
+        {showList && (
+          <ul
+            id={listId}
+            role="listbox"
+            className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border bg-popover text-popover-foreground shadow-md"
+          >
+            {results.length === 0 && !searchError && (
+              <li className="p-3 text-sm text-muted-foreground">Никого не найдено</li>
+            )}
+            {results.map((user, index) => {
+              const added = selected.has(user.id)
+              return (
+                <li
+                  key={user.id}
+                  id={`recipient-${user.id}`}
+                  role="option"
+                  aria-selected={added}
+                  aria-disabled={added}
+                  className={cn(
+                    "flex cursor-pointer items-center justify-between gap-2 px-3 py-2 text-sm",
+                    index === active && "bg-accent text-accent-foreground",
+                    added && "cursor-default opacity-50"
+                  )}
+                  onMouseEnter={() => setActive(index)}
+                  onMouseDown={(event) => {
+                    event.preventDefault()
+                    select(user)
+                  }}
+                >
+                  <span className="min-w-0 truncate">
+                    {user.displayName ?? "Без имени"}
+                    <span className="block truncate text-xs text-muted-foreground">{user.email}</span>
+                  </span>
+                  {added && <span className="shrink-0 text-xs">Добавлен</span>}
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </div>
       {searchError && <FieldError>{searchError}</FieldError>}
-      {found && (
-        <ul className="flex max-h-48 flex-col overflow-y-auto rounded-lg border">
-          {found.length === 0 && <li className="p-2 text-sm text-muted-foreground">Никого не найдено</li>}
-          {found.map((user) => (
-            <li key={user.id} className="flex items-center justify-between gap-2 border-b p-2 text-sm last:border-b-0">
-              <span className="min-w-0 truncate">
-                {user.displayName ?? "Без имени"}{" "}
-                <span className="text-xs text-muted-foreground">{user.email}</span>
-              </span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={recipients.length >= limit && limit > 1}
-                onClick={() => onAdd({ id: user.id, label: user.displayName ?? user.email })}
-              >
-                Добавить
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
       {recipients.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {recipients.map((recipient) => (
