@@ -22,3 +22,7 @@ export function getPrivileges(user: CurrentUser): Privilege[] {
   if (user.privileges) return user.privileges as Privilege[]
   return [...new Set(user.roles.flatMap((role) => ROLE_PRIVILEGES[role] ?? []))]
 }
+
+export function canManageBadges(user: CurrentUser) {
+  return user.privileges?.includes("SETTINGS_MANAGE") ?? false
+}

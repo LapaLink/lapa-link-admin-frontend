@@ -11,7 +11,7 @@ import { Toaster } from "@/components/ui/toast"
 import { adminGet } from "@/lib/admin/api"
 import type { Page, SupportQuestion } from "@/lib/api/admin-types"
 import { getCurrentUser } from "@/lib/auth/current-user"
-import { getPrivileges } from "@/lib/auth/privileges"
+import { canManageBadges, getPrivileges } from "@/lib/auth/privileges"
 
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
@@ -55,17 +55,18 @@ async function CurrentNavUser() {
 }
 
 async function CurrentNavigation() {
-  const privileges = getPrivileges(await getCurrentUser())
+  const user = await getCurrentUser()
+  const privileges = getPrivileges(user)
   const newQuestions = privileges.includes("SUPPORT_MANAGE")
     ? await adminGet<Page<SupportQuestion>>("/admin/support-questions", { status: "NEW", size: "1" })
     : undefined
   const badges: Record<string, number> = newQuestions?.ok && newQuestions.data.totalElements > 0
     ? { "/admin/support": newQuestions.data.totalElements }
     : {}
-  return <AdminNavigation privileges={privileges} badges={badges} />
+  return <AdminNavigation privileges={privileges} badges={badges} badgeAccess={canManageBadges(user)} />
 }
 
 async function CurrentCommandMenu() {
   const user = await getCurrentUser()
-  return <CommandMenu privileges={getPrivileges(user)} />
+  return <CommandMenu privileges={getPrivileges(user)} badgeAccess={canManageBadges(user)} />
 }

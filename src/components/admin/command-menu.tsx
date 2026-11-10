@@ -20,7 +20,7 @@ import { logout } from "@/lib/auth/actions"
 import { getNavigation } from "@/lib/admin/navigation"
 import type { Privilege } from "@/lib/auth/privileges"
 
-export function CommandMenu({ privileges }: { privileges: Privilege[] }) {
+export function CommandMenu({ privileges, badgeAccess = false }: { privileges: Privilege[]; badgeAccess?: boolean }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [, startTransition] = useTransition()
@@ -65,7 +65,7 @@ export function CommandMenu({ privileges }: { privileges: Privilege[] }) {
           <CommandInput placeholder="Раздел или действие…" />
           <CommandList>
             <CommandEmpty>Ничего не найдено</CommandEmpty>
-            {getNavigation(privileges).map((group, index) => (
+            {getNavigation(privileges, badgeAccess).map((group, index) => (
               <CommandGroup key={index} heading={group.title ?? "Основное"}>
                 {group.items.map((item) => (
                   <CommandItem

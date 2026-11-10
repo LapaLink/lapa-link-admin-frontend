@@ -53,28 +53,27 @@ export function AdminSidebar({ navigation, footer }: { navigation: React.ReactNo
 
 type Badges = Record<string, number>
 
-export function AdminNavigation({ privileges, badges = {} }: { privileges: Privilege[]; badges?: Badges }) {
+type NavigationProps = { privileges: Privilege[]; badges?: Badges; badgeAccess?: boolean }
+
+export function AdminNavigation({ privileges, badges = {}, badgeAccess = false }: NavigationProps) {
   return (
-    <Suspense fallback={<Navigation privileges={privileges} badges={badges} pathname={null} />}>
-      <ActiveNavigation privileges={privileges} badges={badges} />
+    <Suspense fallback={<Navigation privileges={privileges} badges={badges} badgeAccess={badgeAccess} pathname={null} />}>
+      <ActiveNavigation privileges={privileges} badges={badges} badgeAccess={badgeAccess} />
     </Suspense>
   )
 }
 
-function ActiveNavigation({ privileges, badges }: { privileges: Privilege[]; badges: Badges }) {
-  return <Navigation privileges={privileges} badges={badges} pathname={usePathname()} />
+function ActiveNavigation(props: Required<NavigationProps>) {
+  return <Navigation {...props} pathname={usePathname()} />
 }
 
 function Navigation({
   privileges,
   badges,
+  badgeAccess,
   pathname,
-}: {
-  privileges: Privilege[]
-  badges: Badges
-  pathname: string | null
-}) {
-  return getNavigation(privileges).map((group, index) => (
+}: Required<NavigationProps> & { pathname: string | null }) {
+  return getNavigation(privileges, badgeAccess).map((group, index) => (
     <SidebarGroup key={index}>
       {group.title && <SidebarGroupLabel>{group.title}</SidebarGroupLabel>}
       <SidebarGroupContent>

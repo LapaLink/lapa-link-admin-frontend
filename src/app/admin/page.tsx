@@ -19,7 +19,7 @@ import type {
   Page,
 } from "@/lib/api/admin-types"
 import { getCurrentUser } from "@/lib/auth/current-user"
-import { getPrivileges } from "@/lib/auth/privileges"
+import { canManageBadges, getPrivileges } from "@/lib/auth/privileges"
 
 export const metadata: Metadata = {
   title: "Обзор",
@@ -60,7 +60,7 @@ export default function AdminPage() {
 
 async function Sections() {
   const user = await getCurrentUser()
-  const sections = getNavigation(getPrivileges(user))
+  const sections = getNavigation(getPrivileges(user), canManageBadges(user))
     .flatMap((group) => group.items)
     .filter((item) => item.href !== "/admin")
 

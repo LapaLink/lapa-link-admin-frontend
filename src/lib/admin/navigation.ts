@@ -1,4 +1,5 @@
 import {
+  AwardIcon,
   BookOpenIcon,
   CircleHelpIcon,
   DatabaseIcon,
@@ -89,6 +90,13 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
         icon: CircleHelpIcon,
         privilege: "DICTIONARY_MANAGE",
       },
+      {
+        title: "Значки",
+        description: "Достижения, условия выдачи и оформление",
+        href: "/admin/badges",
+        icon: AwardIcon,
+        privilege: "SETTINGS_MANAGE",
+      },
     ],
   },
   {
@@ -121,10 +129,13 @@ export const NAVIGATION: { title: string | null; items: NavigationItem[] }[] = [
 ]
 
 /** Navigation without the items whose privilege the user lacks; groups left empty are dropped. */
-export function getNavigation(privileges: Privilege[]) {
+export function getNavigation(privileges: Privilege[], badgeAccess = false) {
   return NAVIGATION.map((group) => ({
     ...group,
-    items: group.items.filter((item) => !item.privilege || privileges.includes(item.privilege)),
+    items: group.items.filter((item) =>
+      (item.href !== "/admin/badges" || badgeAccess) &&
+      (!item.privilege || privileges.includes(item.privilege)),
+    ),
   })).filter((group) => group.items.length > 0)
 }
 

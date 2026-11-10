@@ -16,7 +16,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { adminGet } from "@/lib/admin/api"
+import { getNotificationTemplate } from "@/lib/admin/actions"
 import { NOTIFICATION_EVENT_LABELS } from "@/lib/admin/labels"
+import { splitTemplate } from "@/lib/admin/template-preview"
 import type { NotificationTemplate } from "@/lib/api/admin-types"
 
 export const metadata: Metadata = { title: "Шаблоны уведомлений" }
@@ -51,6 +53,13 @@ async function TemplatesTable() {
   const templates = result.data.toSorted(
     (a, b) => a.eventType.localeCompare(b.eventType) || a.channel.localeCompare(b.channel)
   )
+  const eventLabels = await Promise.all(templates.map(async (template) => {
+    const label = NOTIFICATION_EVENT_LABELS[template.eventType]
+    if (label || template.channel !== "IN_APP" || !template.locales.length) return label ?? template.eventType
+    const locale = template.locales.includes("RU") ? "RU" : template.locales[0]
+    const detail = await getNotificationTemplate(template.eventType, template.channel, locale)
+    return (detail.ok && splitTemplate(detail.data.content).subject) || template.eventType
+  }))
 
   return (
     <DataTable>
@@ -63,10 +72,10 @@ async function TemplatesTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {templates.map((template) => (
+        {templates.map((template, index) => (
           <TableRow key={`${template.eventType}:${template.channel}`}>
             <TableCell>
-              {NOTIFICATION_EVENT_LABELS[template.eventType] ?? template.eventType}
+              {eventLabels[index]}
               <div className="font-mono text-xs text-muted-foreground">{template.eventType}</div>
             </TableCell>
             <TableCell>{CHANNEL_LABELS[template.channel] ?? template.channel}</TableCell>
