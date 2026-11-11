@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDateTime } from "@/lib/admin/format"
+import { CHAT_TARGET_LABELS } from "@/lib/admin/labels"
 import type { AdminComplaint, ComplaintTarget } from "@/lib/api/admin-types"
 import type { Privilege } from "@/lib/auth/privileges"
 import { cn } from "@/lib/utils"
@@ -141,6 +142,14 @@ function UserTargetView({ target, privileges }: { target: UserTarget; privileges
   )
 }
 
+/** "Чат по объявлению «…»" / "Чат с профилем: …"; other target types fall back to the title or just "Чат". */
+function chatTitle(target: ConversationTarget) {
+  if (target.chatTitle == null) return "Чат"
+  if (target.chatTargetType === "CASE") return `Чат по объявлению «${target.chatTitle}»`
+  if (target.chatTargetType === "USER") return `Чат с профилем: ${target.chatTitle}`
+  return target.chatTitle
+}
+
 function ConversationTargetView({
   target,
   reporterId,
@@ -155,10 +164,10 @@ function ConversationTargetView({
   return (
     <Card>
       <CardHeader>
-        <CardDescription>Чат</CardDescription>
-        <CardTitle>
-          {target.chatTitle != null ? `Чат по объявлению «${target.chatTitle}»` : "Чат"}
-        </CardTitle>
+        <CardDescription>
+          Чат{target.chatTargetType != null && ` · ${CHAT_TARGET_LABELS[target.chatTargetType] ?? target.chatTargetType}`}
+        </CardDescription>
+        <CardTitle>{chatTitle(target)}</CardTitle>
         <div className="flex flex-col gap-2 text-sm">
           {deleted && (
             <Alert>

@@ -201,6 +201,12 @@ export const TIME_UNIT_FORMS: Record<string, readonly [string, string, string]> 
   DAYS: ["день", "дня", "дней"],
 }
 
+export const CHAT_TARGET_LABELS: Record<string, string> = {
+  CASE: "Объявление",
+  USER: "Личный чат",
+  SUPPORT: "Поддержка",
+}
+
 export const BROADCAST_CHANNEL_LABELS: Record<string, string> = {
   EMAIL: "Email",
   SMS: "SMS",

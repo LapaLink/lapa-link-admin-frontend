@@ -187,7 +187,7 @@ export type ComplaintTarget =
   | {
       type: "CONVERSATION"
       conversationId: string
-      chatTargetType: "CASE" | null
+      chatTargetType: "CASE" | "USER" | "SUPPORT" | (string & {}) | null
       chatTargetId: string | null
       chatTitle: string | null
       participantIds: string[]
