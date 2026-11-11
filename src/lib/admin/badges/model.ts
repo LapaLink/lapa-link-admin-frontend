@@ -57,7 +57,11 @@ export const createBadgeSchema = updateBadgeSchema.extend({
 
 export type BadgeInput = z.infer<typeof updateBadgeSchema>
 export type NewBadgeInput = z.infer<typeof createBadgeSchema>
-export type AdminBadge = NewBadgeInput & { awardedCount: number; createdAt: string }
+// The backend omits null fields, so imageUrl may be absent; it is read-only and never sent back.
+export type AdminBadge = NewBadgeInput & { imageUrl?: string | null; awardedCount: number; createdAt: string }
+
+export const BADGE_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+export const BADGE_IMAGE_MAX_BYTES = 5 * 1024 * 1024
 export type BadgeMetric = { code: string; description: string }
 
 export function badgePath(code: string) {

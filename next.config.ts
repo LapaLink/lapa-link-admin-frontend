@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    // Badge images go through a server action: up to 5 MB plus multipart overhead.
+    serverActions: { bodySizeLimit: "6mb" },
+  },
   // Chat STOMP socket, proxied like in lapa-link-frontend.
   async rewrites() {
     return [

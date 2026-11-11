@@ -6,6 +6,7 @@ import { useId, useState, useTransition } from "react"
 import { InfoIcon } from "lucide-react"
 
 import { BadgeArtwork } from "@/components/admin/badges/badge-artwork"
+import { BadgeImageField } from "@/components/admin/badges/badge-image-field"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -62,6 +63,7 @@ export function BadgeForm({ badge, metrics = [] }: { badge?: AdminBadge; metrics
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [failure, setFailure] = useState("")
+  const [imageUrl, setImageUrl] = useState(badge?.imageUrl ?? null)
   const [pending, startTransition] = useTransition()
 
   function setValue<K extends keyof typeof values>(key: K, value: (typeof values)[K]) {
@@ -253,6 +255,17 @@ export function BadgeForm({ badge, metrics = [] }: { badge?: AdminBadge; metrics
               )}
               {fieldError("icon")}
             </Field>
+            {badge ? (
+              <BadgeImageField
+                badge={{ code: badge.code, category: badge.category, icon: badge.icon, imageUrl }}
+                onChange={setImageUrl}
+              />
+            ) : (
+              <Field>
+                <FieldLabel>Изображение</FieldLabel>
+                <FieldDescription>Загрузить своё изображение можно после создания значка.</FieldDescription>
+              </Field>
+            )}
             <FieldGroup className="grid gap-4 sm:grid-cols-2">
               {TEXT_FIELDS.map(({ name, label, max }) => {
                 const props = { ...fieldProps(name), value: values[name], maxLength: max }
@@ -316,7 +329,8 @@ export function BadgeForm({ badge, metrics = [] }: { badge?: AdminBadge; metrics
               badge={{
                 code: values.code.trim(),
                 icon: values.icon.trim() || null,
-                category: values.category
+                category: values.category,
+                imageUrl
               }}
               size={72}
             />

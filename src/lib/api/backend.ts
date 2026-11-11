@@ -15,7 +15,9 @@ export async function backendFetch<T>(
   { method = "GET", body, token }: RequestOptions = {}
 ): Promise<ApiResult<T>> {
   const headers: Record<string, string> = { "Accept-Language": "ru" }
-  if (body !== undefined) headers["Content-Type"] = "application/json"
+  // FormData gets its Content-Type with the multipart boundary from fetch itself.
+  const multipart = body instanceof FormData
+  if (body !== undefined && !multipart) headers["Content-Type"] = "application/json"
   if (token) headers.Authorization = `Bearer ${token}`
 
   let response: Response
@@ -23,7 +25,7 @@ export async function backendFetch<T>(
     response = await fetch(`${BACKEND_URL}/api/v1${path}`, {
       method,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : multipart ? body : JSON.stringify(body),
       cache: "no-store",
     })
   } catch {

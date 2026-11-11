@@ -50,6 +50,33 @@ export async function updateBadge(code: string, input: BadgeInput): Promise<ApiR
   return result
 }
 
+/** Uploads or replaces the badge image; the old file is removed by the backend. */
+export async function uploadBadgeImage(code: string, formData: FormData): Promise<ApiResult<AdminBadge>> {
+  const error = await badgeAccessError()
+  if (error) return { ok: false, error }
+  const parsed = badgeCode.safeParse(code)
+  if (!parsed.success) return invalid(parsed.error)
+  const file = formData.get("file")
+  if (!(file instanceof File))
+    return { ok: false, error: { status: 400, code: "INVALID_IMAGE", message: "Файл не передан." } }
+  const body = new FormData()
+  body.set("file", file)
+  const result = await adminSend<AdminBadge>("PUT", `${badgePath(parsed.data)}/image`, body)
+  if (result.ok || result.error.code === "BADGE_NOT_FOUND") revalidatePath(BADGES_PATH)
+  return result
+}
+
+/** Removes the badge image; succeeds also when there was none. */
+export async function deleteBadgeImage(code: string): Promise<ApiResult<AdminBadge>> {
+  const error = await badgeAccessError()
+  if (error) return { ok: false, error }
+  const parsed = badgeCode.safeParse(code)
+  if (!parsed.success) return invalid(parsed.error)
+  const result = await adminSend<AdminBadge>("DELETE", `${badgePath(parsed.data)}/image`)
+  if (result.ok || result.error.code === "BADGE_NOT_FOUND") revalidatePath(BADGES_PATH)
+  return result
+}
+
 export async function setBadgeActivity(code: string, active: boolean): Promise<ApiResult<AdminBadge>> {
   const current = await getBadge(code)
   if (!current.ok || current.data.active === active) return current
