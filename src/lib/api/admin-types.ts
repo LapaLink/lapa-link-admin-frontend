@@ -278,6 +278,9 @@ export const AUDIT_ACTIONS = [
   "SUPPORT_QUESTION_CREATED",
   "COMPLAINT_CREATED",
   "ADOPTION_REQUEST_CREATED",
+  "ADOPTION_REQUEST_STATUS_CHANGED",
+  "ADOPTION_REQUEST_CANCELLED",
+  "ADOPTION_REQUEST_ANSWER_ADDED",
   "USER_LIMIT_RESET",
   "USER_PHONE_CONFIRMATION_REQUESTED",
   "USER_PHONE_CONFIRMED",
@@ -297,7 +300,7 @@ export type AuditLogEntry = {
   actorId: string | null
   actorRole: RoleCode | null
   action: AuditAction
-  targetType: "USER" | "CASE" | "HELP_APPLICATION" | "CONVERSATION" | "COMPLAINT" | null
+  targetType: "USER" | "CASE" | "HELP_APPLICATION" | "CONVERSATION" | "COMPLAINT" | "ADOPTION_REQUEST" | null
   targetId: string | null
   outcome: AuditOutcome
   errorCode: string | null

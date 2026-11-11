@@ -18,6 +18,17 @@ import {
 } from "@/lib/admin/labels"
 import type { AuditLogEntry } from "@/lib/api/admin-types"
 
+// The status of an entity is recorded as changes.status = { from, to }; some events keep it in the metadata.
+function statusChange(event: AuditLogEntry) {
+  const change = event.changes?.status
+  if (change && typeof change === "object" && "to" in change) {
+    const { from, to } = change as { from?: unknown; to?: unknown }
+    return `${from ?? "—"} → ${to ?? "—"}`
+  }
+  const { oldStatus, newStatus } = event.metadata ?? {}
+  return newStatus ? `${oldStatus ?? "—"} → ${newStatus}` : null
+}
+
 function label(labels: Record<string, string>, value: unknown) {
   return typeof value === "string" ? (labels[value] ?? value) : null
 }
@@ -27,6 +38,7 @@ export function EventDetails({ event }: { event: AuditLogEntry }) {
     ["Идентификатор", event.id],
     ["Инициатор", [event.actorType, event.actorRole, event.actorId].filter(Boolean).join(" · ")],
     ["Объект", [event.targetType, event.targetId].filter(Boolean).join(" · ") || null],
+    ["Статус", statusChange(event)],
     ["Код ошибки", event.errorCode ? (AUDIT_ERROR_LABELS[event.errorCode] ? `${AUDIT_ERROR_LABELS[event.errorCode]} (${event.errorCode})` : event.errorCode) : null],
     ["Лимит", typeof event.metadata?.limitType === "string" ? event.metadata.limitType : null],
     ["Бан при превышении", label(LIMIT_BAN_TYPE_LABELS, event.metadata?.limitBanType)],
