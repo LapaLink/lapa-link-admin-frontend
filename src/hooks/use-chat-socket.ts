@@ -35,9 +35,7 @@ export function useChatSocket({
     if (!enabled || !conversationId) return
     const { protocol, host } = window.location
     const stomp = new Client({
-      // Hosts that can't proxy WebSocket upgrades (Netlify, Vercel) need a direct backend URL instead.
-      brokerURL:
-        process.env.NEXT_PUBLIC_CHAT_WS_URL || `${protocol === "https:" ? "wss:" : "ws:"}//${host}/ws`,
+      brokerURL: socketUrl(`${protocol === "https:" ? "wss:" : "ws:"}//${host}/ws`),
       connectionTimeout: 20_000,
       heartbeatIncoming: 10_000,
       heartbeatOutgoing: 10_000,
@@ -84,6 +82,28 @@ export function useChatSocket({
   }
 
   return { status, send }
+}
+
+/**
+ * Hosts that can't proxy WebSocket upgrades (Netlify, Vercel) set NEXT_PUBLIC_CHAT_WS_URL to the backend
+ * (wss://host/ws). https:// is converted to wss://, a bare host gets wss://; a value with any other scheme is
+ * reported and ignored in favour of the same-origin `/ws`.
+ */
+function socketUrl(sameOrigin: string) {
+  const configured = process.env.NEXT_PUBLIC_CHAT_WS_URL?.trim()
+  if (!configured) return sameOrigin
+  let url = configured
+  if (/^https?:\/\//i.test(url)) url = url.replace(/^http/i, "ws")
+  else if (!url.includes("://")) url = `wss://${url.replace(/^\/+/, "")}`
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol !== "ws:" && parsed.protocol !== "wss:") throw new Error("scheme")
+    if (parsed.pathname === "/") parsed.pathname = "/ws"
+    return parsed.toString()
+  } catch {
+    console.error(`NEXT_PUBLIC_CHAT_WS_URL is invalid, expected wss://<backend host>/ws, got "${configured}"`)
+    return sameOrigin
+  }
 }
 
 function parse<T>(body: string): T | null {
